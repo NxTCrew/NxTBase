@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "nxt"
-version = "1.0-SNAPSHOT"
+version = "0.0.1"
 
 repositories {
     maven("https://repo.flawcra.cc/mirrors")
@@ -60,8 +60,15 @@ tasks {
     }
 }
 
+kotlin {
+    jvmToolchain(17)
+}
+
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+    withJavadocJar()
+    withSourcesJar()
 }
 
 publishing {
