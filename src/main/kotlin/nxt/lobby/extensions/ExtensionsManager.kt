@@ -31,7 +31,7 @@ class ExtensionsManager(private val mainPlugin: Plugin) {
     private fun preLoadExtensions() {
         extensionsFolder.mkdirs()
         extensionsFolder.listFiles()?.forEach { file ->
-            if (file.isDirectory) {
+            if (file.extension == "jar") {
                 // Load the patch.json from inside the pathFile using ZipFile and ZipEntry
                 val zipFile = java.util.zip.ZipFile(file)
                 val zipEntry = zipFile.getEntry("extension.json")
@@ -47,11 +47,17 @@ class ExtensionsManager(private val mainPlugin: Plugin) {
 
     private suspend fun checkDependencies() {
         availableExtensions.forEach { (name, extensionInfo) ->
-            extensionInfo.dependencies.forEach { dependency ->
-                if (!availableExtensions.containsKey(dependency)) {
-                    getItsLogger().warning("Extension $name has a dependency on $dependency, but it is not loaded.")
+            if(extensionInfo.dependencies.isEmpty() && extensionInfo.pluginDependencies.isEmpty()) return@forEach
+
+            if(extensionInfo.dependencies.isNotEmpty()) {
+                extensionInfo.dependencies.forEach { dependency ->
+                    if (!availableExtensions.containsKey(dependency)) {
+                        getItsLogger().warning("Extension $name has a dependency on $dependency, but it is not loaded.")
+                    }
                 }
             }
+
+            if(extensionInfo.pluginDependencies.isEmpty()) return@forEach
             extensionInfo.pluginDependencies.forEach { dependency ->
                 if (!mainPlugin.server.pluginManager.isPluginEnabled(dependency)) {
                     getItsLogger().warning("Extension $name has a dependency on $dependency, but it is not loaded.")
