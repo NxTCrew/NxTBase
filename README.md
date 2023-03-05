@@ -54,6 +54,7 @@ NxT is a entire ecosystem of plugins for Minecraft servers. This is the lobby pl
 * [![Kotlin][Kotlin]][Kotlin-url]
 * [![Spigot][Spigot]][Spigot-url]
 * [![Gradle][Gradle]][Gradle-url]
+* [![Ascend][Ascend]][Ascend-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -175,7 +176,9 @@ Project Link: [https://github.com/NxTCrew/NxTLobby](https://github.com/NxTCrew/N
 
 [Spigot]: https://img.shields.io/badge/Spigot-1.19+-green.svg?style=for-the-badge
 [Spigot-url]: https://www.spigotmc.org/
-[Kotlin]: https://img.shields.io/badge/Kotlin-1.8.0-blue.svg?style=for-the-badge
+[Kotlin]: https://img.shields.io/badge/Kotlin-1.8.20%20beta-blue.svg?style=for-the-badge
 [Kotlin-url]: https://kotlinlang.org/
-[Gradle]: https://img.shields.io/badge/Gradle-7.4.2-blue.svg?style=for-the-badge
+[Gradle]: https://img.shields.io/badge/Gradle-8.0.1-blue.svg?style=for-the-badge
 [Gradle-url]: https://gradle.org/
+[Ascend]: https://img.shields.io/badge/Ascend-22.0.0-green.svg?style=for-the-badge
+[Ascend-url]: https://github.com/TheFruxz/Ascend

@@ -1,13 +1,16 @@
 package nxt.lobby
 
+import nxt.lobby.extensions.ExtensionsManager
 import org.bukkit.plugin.java.JavaPlugin
 
 class NxTLobby : JavaPlugin() {
 
+    lateinit var extensionsManager: ExtensionsManager
+
     // Plugin startup logic
     override fun onEnable() {
         // Check for extensions updates
-        // Load extensions
+        this.extensionsManager = ExtensionsManager(this)
         // Load config
         // Load commands
         // Load listeners

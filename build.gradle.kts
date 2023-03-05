@@ -2,8 +2,9 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.8.0"
+    kotlin("jvm") version "1.8.20-Beta"
     id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("maven-publish")
 }
 
 group = "nxt"
@@ -19,6 +20,7 @@ val shadows = listOf<String>(
     "org.javassist:javassist:3.29.2-GA",             // Library for Reflections (Dynamic Class Loading)
     "io.ktor:ktor-client-core-jvm:2.2.3",               // Library for HTTP Requests
     "io.ktor:ktor-client-cio-jvm:2.2.3",                // Library for HTTP Requests
+    "com.github.TheFruxz:Ascend:22.0.0"
 )
 
 dependencies {
@@ -60,4 +62,22 @@ tasks {
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/NxTCrew/NxTLobby")
+            credentials {
+                username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
+                password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
+            }
+        }
+    }
+    publications {
+        register<MavenPublication>("gpr") {
+            from(components["java"])
+        }
+    }
 }
