@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "nxt"
-version = "0.0.2"
+version = "0.0.3"
 
 repositories {
     maven("https://repo.flawcra.cc/mirrors")
@@ -73,6 +73,9 @@ java {
 
 publishing {
     repositories {
+
+        mavenLocal()
+
         maven {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/NxTCrew/NxTLobby")
