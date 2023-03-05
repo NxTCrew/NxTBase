@@ -22,19 +22,19 @@
 <div align="center">
 <h3 align="center">NxTLobby</h3>
 
-  <a href="https://github.com/orgs/NxTCrew/NxTLobby">
+  <a href="https://github.com/NxTCrew/NxTLobby">
     <img src="images/nxtlogo-nobg.png" alt="Logo" width="80" height="80">
   </a>
 
   <p align="center">
     Your next lobby system
     <br />
-    <a href="https://github.com/orgs/NxTCrew/NxTLobby/wiki"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/NxTCrew/NxTLobby/wiki"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/orgs/NxTCrew/NxTLobby/issues">Report Bug</a>
+    <a href="https://github.com/NxTCrew/NxTLobby/issues">Report Bug</a>
     ·
-    <a href="https://github.com/orgs/NxTCrew/NxTLobby/issues">Request Feature</a>
+    <a href="https://github.com/NxTCrew/NxTLobby/issues">Request Feature</a>
   </p>
 </div>
 
@@ -143,7 +143,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Project Link: [https://github.com/orgs/NxTCrew/NxTLobby](https://github.com/orgs/NxTCrew/NxTLobby)
+Project Link: [https://github.com/NxTCrew/NxTLobby](https://github.com/NxTCrew/NxTLobby)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
