@@ -1,22 +1,19 @@
 package nxt.lobby.extensions
 
 import com.google.gson.Gson
-import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
 import de.fruxz.ascend.extension.logging.getItsLogger
 import de.fruxz.ascend.json.fromJsonStream
-import de.fruxz.ascend.json.globalJson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.DeserializationStrategy
 import nxt.lobby.extensions.types.ExtensionInfo
 import nxt.lobby.extensions.types.NxTExtension
 import org.bukkit.plugin.Plugin
 import java.io.File
+import java.io.FileOutputStream
+import java.net.HttpURLConnection
 import java.nio.charset.Charset
-import java.nio.file.Files
-import java.nio.file.StandardCopyOption
 
 class ExtensionsManager(private val mainPlugin: Plugin) {
 
@@ -67,9 +64,14 @@ class ExtensionsManager(private val mainPlugin: Plugin) {
                     getItsLogger().warning("Extension $name has a dependency on $dependency, but it is not loaded.")
 
                     // Try to download the plugin from spiget
-                    downloadPlugin(dependency) {
-                        getItsLogger().info("Downloaded $dependency successfully.")
-                        mainPlugin.server.pluginManager.loadPlugin(it)
+                    try {
+                        downloadPlugin(dependency) {
+                            getItsLogger().info("Downloaded $dependency successfully.")
+                            mainPlugin.server.pluginManager.loadPlugin(it)
+                        }
+                    } catch (e: Exception) {
+                        getItsLogger().warning("Could not load $dependency.")
+                        getItsLogger().warning(e.message)
                     }
                 }
             }
@@ -84,10 +86,24 @@ class ExtensionsManager(private val mainPlugin: Plugin) {
             val pluginInfo = infoUrl.readText(Charset.defaultCharset())
             val pluginId = gson.fromJson(pluginInfo, JsonElement::class.java).asJsonArray[0].asJsonObject["id"].asInt
 
-            val url = java.net.URL("https://api.spiget.org/v2/resources/$pluginId/download")
-            val fileToWrite = File(mainPlugin.dataFolder, "plugins/$pluginName.jar")
+            println("PluginID: $pluginId")
 
-            Files.copy(url.openStream(), fileToWrite.toPath(), StandardCopyOption.REPLACE_EXISTING)
+            val url = java.net.URL("https://api.spiget.org/v2/resources/$pluginId/download")
+            val fileToWrite = File(mainPlugin.dataFolder, "../$pluginName.jar")
+
+            val connection = url.openConnection() as HttpURLConnection
+            connection.requestMethod = "GET"
+            connection.setRequestProperty("User-Agent", "NxTAgent/1.0")
+
+            val inputStream = connection.inputStream
+            val fileOutputStream = FileOutputStream(fileToWrite)
+            val buffer = ByteArray(1024)
+            var bytesRead: Int
+            while (inputStream.read(buffer).also { bytesRead = it } != -1) {
+                fileOutputStream.write(buffer, 0, bytesRead)
+            }
+            fileOutputStream.close()
+            inputStream.close()
             onSuccess(fileToWrite)
         }
     }
@@ -114,9 +130,14 @@ class ExtensionsManager(private val mainPlugin: Plugin) {
                 loadOrder
             }
         }.forEach { (name, extensionInfo) ->
-            val extensionClass = Class.forName(extensionInfo.main)
-            val extension = extensionClass.getConstructor(Plugin::class.java, ExtensionInfo::class.java).newInstance(mainPlugin, extensionInfo) as NxTExtension
-            loadedExtensions[name] = extension
+            try {
+                val extensionClass = Class.forName(extensionInfo.main)
+                val extension = extensionClass.getConstructor(Plugin::class.java, ExtensionInfo::class.java).newInstance(mainPlugin, extensionInfo) as NxTExtension
+                loadedExtensions[name] = extension
+            } catch (e: Exception) {
+                getItsLogger().warning("Could not load extension $name.")
+                getItsLogger().warning(e.message)
+            }
         }
 
         getItsLogger().info("Loaded ${loadedExtensions.size} extensions.")
