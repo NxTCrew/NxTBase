@@ -86,7 +86,7 @@ You need the following software to run this plugin:
 ## Roadmap
 
 - [ ] Extension system
-  - [ ] Dynamic loading of extensions
+  - [x] Dynamic loading of extensions
   - [ ] Extension API
   - [ ] Extension examples
   - [ ] Extension documentation
