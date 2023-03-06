@@ -1,5 +1,8 @@
 package nxt.lobby.extensions.types
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class ExtensionInfo(
     /**
      * The name of the extension.

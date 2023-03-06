@@ -3,6 +3,7 @@ package nxt.lobby.extensions
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import de.fruxz.ascend.extension.logging.getItsLogger
+import de.fruxz.ascend.json.fromJsonStream
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -10,9 +11,9 @@ import nxt.lobby.extensions.types.ExtensionInfo
 import nxt.lobby.extensions.types.NxTExtension
 import org.bukkit.plugin.Plugin
 import java.io.File
+import java.io.FileOutputStream
+import java.net.HttpURLConnection
 import java.nio.charset.Charset
-import java.nio.file.Files
-import java.nio.file.StandardCopyOption
 
 class ExtensionsManager(private val mainPlugin: Plugin) {
 
@@ -31,12 +32,12 @@ class ExtensionsManager(private val mainPlugin: Plugin) {
     private fun preLoadExtensions() {
         extensionsFolder.mkdirs()
         extensionsFolder.listFiles()?.forEach { file ->
-            if (file.isDirectory) {
+            if (file.extension == "jar") {
                 // Load the patch.json from inside the pathFile using ZipFile and ZipEntry
                 val zipFile = java.util.zip.ZipFile(file)
                 val zipEntry = zipFile.getEntry("extension.json")
                 val inputStream = zipFile.getInputStream(zipEntry)
-                val extensionInfo = gson.fromJson(inputStream.reader(), ExtensionInfo::class.java)
+                val extensionInfo = inputStream.fromJsonStream<ExtensionInfo>()
 
                 availableExtensions[extensionInfo.name] = extensionInfo
             }
@@ -47,19 +48,30 @@ class ExtensionsManager(private val mainPlugin: Plugin) {
 
     private suspend fun checkDependencies() {
         availableExtensions.forEach { (name, extensionInfo) ->
-            extensionInfo.dependencies.forEach { dependency ->
-                if (!availableExtensions.containsKey(dependency)) {
-                    getItsLogger().warning("Extension $name has a dependency on $dependency, but it is not loaded.")
+            if(extensionInfo.dependencies.isEmpty() && extensionInfo.pluginDependencies.isEmpty()) return@forEach
+
+            if(extensionInfo.dependencies.isNotEmpty()) {
+                extensionInfo.dependencies.forEach { dependency ->
+                    if (!availableExtensions.containsKey(dependency)) {
+                        getItsLogger().warning("Extension $name has a dependency on $dependency, but it is not loaded.")
+                    }
                 }
             }
+
+            if(extensionInfo.pluginDependencies.isEmpty()) return@forEach
             extensionInfo.pluginDependencies.forEach { dependency ->
                 if (!mainPlugin.server.pluginManager.isPluginEnabled(dependency)) {
                     getItsLogger().warning("Extension $name has a dependency on $dependency, but it is not loaded.")
 
                     // Try to download the plugin from spiget
-                    downloadPlugin(dependency) {
-                        getItsLogger().info("Downloaded $dependency successfully.")
-                        mainPlugin.server.pluginManager.loadPlugin(it)
+                    try {
+                        downloadPlugin(dependency) {
+                            getItsLogger().info("Downloaded $dependency successfully.")
+                            mainPlugin.server.pluginManager.loadPlugin(it)
+                        }
+                    } catch (e: Exception) {
+                        getItsLogger().warning("Could not load $dependency.")
+                        getItsLogger().warning(e.message)
                     }
                 }
             }
@@ -74,10 +86,24 @@ class ExtensionsManager(private val mainPlugin: Plugin) {
             val pluginInfo = infoUrl.readText(Charset.defaultCharset())
             val pluginId = gson.fromJson(pluginInfo, JsonElement::class.java).asJsonArray[0].asJsonObject["id"].asInt
 
-            val url = java.net.URL("https://api.spiget.org/v2/resources/$pluginId/download")
-            val fileToWrite = File(mainPlugin.dataFolder, "plugins/$pluginName.jar")
+            println("PluginID: $pluginId")
 
-            Files.copy(url.openStream(), fileToWrite.toPath(), StandardCopyOption.REPLACE_EXISTING)
+            val url = java.net.URL("https://api.spiget.org/v2/resources/$pluginId/download")
+            val fileToWrite = File(mainPlugin.dataFolder, "../$pluginName.jar")
+
+            val connection = url.openConnection() as HttpURLConnection
+            connection.requestMethod = "GET"
+            connection.setRequestProperty("User-Agent", "NxTAgent/1.0")
+
+            val inputStream = connection.inputStream
+            val fileOutputStream = FileOutputStream(fileToWrite)
+            val buffer = ByteArray(1024)
+            var bytesRead: Int
+            while (inputStream.read(buffer).also { bytesRead = it } != -1) {
+                fileOutputStream.write(buffer, 0, bytesRead)
+            }
+            fileOutputStream.close()
+            inputStream.close()
             onSuccess(fileToWrite)
         }
     }
@@ -104,9 +130,14 @@ class ExtensionsManager(private val mainPlugin: Plugin) {
                 loadOrder
             }
         }.forEach { (name, extensionInfo) ->
-            val extensionClass = Class.forName(extensionInfo.main)
-            val extension = extensionClass.getConstructor(Plugin::class.java, ExtensionInfo::class.java).newInstance(mainPlugin, extensionInfo) as NxTExtension
-            loadedExtensions[name] = extension
+            try {
+                val extensionClass = Class.forName(extensionInfo.main)
+                val extension = extensionClass.getConstructor(Plugin::class.java, ExtensionInfo::class.java).newInstance(mainPlugin, extensionInfo) as NxTExtension
+                loadedExtensions[name] = extension
+            } catch (e: Exception) {
+                getItsLogger().warning("Could not load extension $name.")
+                getItsLogger().warning(e.message)
+            }
         }
 
         getItsLogger().info("Loaded ${loadedExtensions.size} extensions.")

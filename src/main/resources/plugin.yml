@@ -1,5 +1,5 @@
 name: NxTLobby
 main: nxt.lobby.NxTLobby
-version: 1.0
+version: "${project.version}"
 api-version: 1.19
 author: NxT
