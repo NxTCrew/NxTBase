@@ -8,22 +8,41 @@ import kotlinx.coroutines.*
 import nxt.lobby.extensions.types.ExtensionInfo
 import nxt.lobby.extensions.types.NxTExtension
 import nxt.lobby.reflection.ReflectionManager
+import nxt.lobby.reflection.types.NxTCommand
+import org.bukkit.event.Listener
 import org.bukkit.plugin.Plugin
 import java.io.File
 import java.io.FileOutputStream
 import java.net.HttpURLConnection
+import java.net.URLClassLoader
 import java.nio.charset.Charset
 
 @OptIn(DelicateCoroutinesApi::class)
 class ExtensionsManager internal constructor(private val mainPlugin: Plugin, private val reflectionManager: ReflectionManager) {
-
-    private val extensionsFolder = File(mainPlugin.dataFolder, "extensions")
+    val extensionsFolder = File(mainPlugin.dataFolder, "extensions")
     private  val gson = Gson()
 
     private val availableExtensions = mutableMapOf<String, ExtensionInfo>()
-    private val loadedExtensions = mutableMapOf<String, NxTExtension>()
+    val loadedExtensions = mutableMapOf<String, NxTExtension>()
+
+    private val classLoaderParent = javaClass.classLoader
+    private val classLoader = URLClassLoader(extensionsFolder.listFiles()?.map { it.toURI().toURL() }?.toTypedArray(), classLoaderParent)
+
+    private val loadedClasses = mutableMapOf<String, Class<*>>()
 
     init {
+        preLoadExtensions()
+        runBlocking { checkDependencies() }
+        loadExtensions()
+        GlobalScope.launch {
+            reflectionManager.loadExtensionReflections(loadedExtensions.values.toList())
+        }
+    }
+
+    internal fun reloadExtensions() {
+        loadedExtensions.values.forEach { it.onDisable() }
+        loadedExtensions.clear()
+        loadedClasses.clear()
         preLoadExtensions()
         runBlocking { checkDependencies() }
         loadExtensions()
@@ -48,6 +67,47 @@ class ExtensionsManager internal constructor(private val mainPlugin: Plugin, pri
                 val zipEntry = zipFile.getEntry("extension.json")
                 val inputStream = zipFile.getInputStream(zipEntry)
                 val extensionInfo = inputStream.fromJsonStream<ExtensionInfo>()
+
+                // Load all .class files from the jar file and add them to the class loader
+                /*val entries = zipFile.entries()
+                while (entries.hasMoreElements()) {
+                    val entry = entries.nextElement()
+                    if (entry.name.endsWith(".class")) {
+                        try {
+                            val clazz = Class.forName(entry.name.replace("/", ".").substringBeforeLast("."), false, classLoader)
+                            if (clazz.annotations.any { it is NxTCommand }) {
+                                reflectionManager.registerCommand(clazz)
+                            }
+                            try {
+                                val listener = clazz.asSubclass(Listener::class.java)
+                                reflectionManager.registerListener(listener)
+                            } catch (e: ClassCastException) {
+                                // Ignore
+                            }
+                            loadedClasses["${clazz.packageName}.${clazz.name}"] = clazz
+                            println("Loaded class ${clazz.packageName}.${clazz.name}")
+                        } catch (e: ClassNotFoundException) {
+                            getItsLogger().warning("Could not load class ${entry.name.replace("/", ".").substringBeforeLast(".")}")
+                        }
+                    }
+                }*/
+                val jarEntries = zipFile.entries()
+                jarEntries?.toList()?.forEach { entry ->
+                    if (!entry.name.endsWith(".class")) return@forEach
+                    val className = entry.name.replace('/', '.').dropLast(6)
+                    val clazz = classLoader.loadClass(className)
+                    if (clazz.annotations.any { it is NxTCommand }) {
+                        reflectionManager.registerCommand(clazz)
+                    }
+                    try {
+                        val listener = clazz.asSubclass(Listener::class.java)
+                        reflectionManager.registerListener(listener)
+                    } catch (e: ClassCastException) {
+                        // Ignore
+                    }
+                    loadedClasses["${clazz.packageName}.${clazz.name}"] = clazz
+                    println("Loaded class ${clazz.packageName}.${clazz.name}")
+                }
 
                 availableExtensions[extensionInfo.name] = extensionInfo
             }
@@ -140,9 +200,6 @@ class ExtensionsManager internal constructor(private val mainPlugin: Plugin, pri
      * @see NxTExtension
      */
     private fun loadExtensions() {
-        val classLoaderParent = javaClass.classLoader
-        val classLoader = java.net.URLClassLoader(extensionsFolder.listFiles()?.map { it.toURI().toURL() }?.toTypedArray(), classLoaderParent)
-
         availableExtensions.toSortedMap { ex1, ex2 ->
             val ex1Info = availableExtensions[ex1]!!
             val ex2Info = availableExtensions[ex2]!!

@@ -87,6 +87,9 @@ You need the following software to run this plugin:
 
 - [ ] Extension system
   - [x] Dynamic loading of extensions
+  - [ ] Extension Ingame Command
+     - [x] Simple extension management with list and reload
+     - [ ] Fully featured extension management
   - [ ] Extension API
   - [ ] Extension examples
   - [ ] Extension documentation

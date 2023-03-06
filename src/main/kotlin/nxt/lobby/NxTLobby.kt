@@ -9,7 +9,16 @@ import org.bukkit.plugin.java.JavaPlugin
 
 class NxTLobby : JavaPlugin() {
 
-    private lateinit var extensionsManager: ExtensionsManager
+    companion object {
+        lateinit var instance: NxTLobby
+    }
+
+    init {
+        instance = this
+    }
+
+
+    lateinit var extensionsManager: ExtensionsManager
     private lateinit var reflectionManager: ReflectionManager
 
 

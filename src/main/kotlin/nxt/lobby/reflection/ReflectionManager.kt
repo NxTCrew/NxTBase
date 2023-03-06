@@ -5,6 +5,7 @@ import kotlinx.coroutines.*
 import nxt.lobby.extensions.types.NxTExtension
 import nxt.lobby.reflection.types.NxTCommand
 import org.bukkit.Bukkit
+import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandMap
 import org.bukkit.command.PluginCommand
@@ -78,23 +79,7 @@ internal class ReflectionManager internal constructor(private val mainPlugin: Pl
             val loadedCommands = mutableListOf<PluginCommand>()
             for (clazz in reflections.getTypesAnnotatedWith(NxTCommand::class.java)) {
                 try {
-                    val annotation: NxTCommand = clazz.getAnnotation(NxTCommand::class.java)
-
-                    val pluginClass: Class<PluginCommand> = PluginCommand::class.java
-                    val constructor = pluginClass.getDeclaredConstructor(String::class.java, Plugin::class.java)
-
-                    constructor.isAccessible = true
-
-                    val command: PluginCommand = constructor.newInstance(annotation.name, mainPlugin)
-
-                    command.aliases = annotation.aliases.toList()
-                    command.description = annotation.description
-                    command.permission = Permission(annotation.permission, annotation.permissionDefault).name
-                    command.usage = annotation.usage
-                    command.label = annotation.namespace
-                    val commandInstance = clazz.getDeclaredConstructor().newInstance() as CommandExecutor
-                    command.setExecutor(commandInstance)
-                    command.tabCompleter = commandInstance as? TabCompleter
+                    val command = registerCommand(clazz)
                     loadedCommands.add(command)
                     amountCommands++
                 } catch (exception: InstantiationError) {
@@ -109,6 +94,27 @@ internal class ReflectionManager internal constructor(private val mainPlugin: Pl
         return timeForCommands
     }
 
+    internal fun registerCommand(clazz: Class<*>): PluginCommand {
+        println("Found NxTCommand in ${clazz.packageName}.${clazz.name}")
+        val annotation = clazz.getAnnotation(NxTCommand::class.java)
+        val pluginClass: Class<PluginCommand> = PluginCommand::class.java
+        val constructor = pluginClass.getDeclaredConstructor(String::class.java, Plugin::class.java)
+
+        constructor.isAccessible = true
+
+        val command: PluginCommand = constructor.newInstance(annotation.name, mainPlugin)
+
+        command.aliases = annotation.aliases.toList()
+        command.description = annotation.description
+        command.permission = Permission(annotation.permission, annotation.permissionDefault).name
+        command.usage = annotation.usage
+        command.label = annotation.namespace
+        val commandInstance = clazz.getDeclaredConstructor().newInstance() as CommandExecutor
+        command.setExecutor(commandInstance)
+        command.tabCompleter = commandInstance as? TabCompleter
+        return command
+    }
+
     /**
      * Loads all listeners
      * @param reflections The reflections Object to use
@@ -121,27 +127,33 @@ internal class ReflectionManager internal constructor(private val mainPlugin: Pl
         var amountListeners = 0
         val timeForListeners = measureTime {
             for (clazz in reflections.getSubTypesOf(Listener::class.java)) {
-                try {
-                    val constructor = clazz.declaredConstructors.find { it.parameterCount == 0 } ?: continue
-
-                    if (clazz.`package`.name.contains("conversations")) continue
-
-                    constructor.isAccessible = true
-
-                    val event = constructor.newInstance() as Listener
-
-                    Bukkit.getPluginManager().registerEvents(event, mainPlugin)
-                    amountListeners++
-                    getItsLogger().info("Listener ${event.javaClass.simpleName} registered")
-                } catch (exception: InstantiationError) {
-                    exception.printStackTrace()
-                } catch (exception: IllegalAccessException) {
-                    exception.printStackTrace()
-                }
+                registerListener(clazz)
+                amountListeners++
             }
         }
         getItsLogger().info("Loaded $amountListeners Listeners from $baseName in $timeForListeners")
         return timeForListeners
+    }
+
+    internal fun registerListener(clazz: Class<out Listener>) {
+        println("Found Listener in ${clazz.packageName}.${clazz.name}")
+        try {
+            val constructor = clazz.declaredConstructors.find { it.parameterCount == 0 } ?: return
+
+            if (clazz.`package`.name.contains("conversations")) return
+
+            constructor.isAccessible = true
+
+            val event = constructor.newInstance() as Listener
+
+            Bukkit.getPluginManager().registerEvents(event, mainPlugin)
+
+            getItsLogger().info("Listener ${event.javaClass.simpleName} registered")
+        } catch (exception: InstantiationError) {
+            exception.printStackTrace()
+        } catch (exception: IllegalAccessException) {
+            exception.printStackTrace()
+        }
     }
 
 
