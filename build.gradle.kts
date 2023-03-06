@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.8.20-Beta"
+    kotlin("plugin.serialization") version "1.8.10"
     id("com.github.johnrengelman.shadow") version "7.1.2"
     id("maven-publish")
 }
@@ -26,6 +27,14 @@ val shadows = listOf<String>(
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.19.3-R0.1-SNAPSHOT")
     compileOnly("com.google.code.gson:gson:2.8.9")
+
+    // Kotlin Base Dependencies
+    ("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5").let { dependency ->
+        implementation(dependency)
+        shadow(dependency) { isTransitive = false } // <- non-transitive is important
+    }
+    compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+    compileOnly("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
 
     shadows.forEach { dependency ->
         implementation(dependency)

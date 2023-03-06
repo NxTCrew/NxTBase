@@ -1,11 +1,15 @@
 package nxt.lobby.extensions
 
 import com.google.gson.Gson
+import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
 import de.fruxz.ascend.extension.logging.getItsLogger
+import de.fruxz.ascend.json.fromJsonStream
+import de.fruxz.ascend.json.globalJson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.DeserializationStrategy
 import nxt.lobby.extensions.types.ExtensionInfo
 import nxt.lobby.extensions.types.NxTExtension
 import org.bukkit.plugin.Plugin
@@ -36,7 +40,7 @@ class ExtensionsManager(private val mainPlugin: Plugin) {
                 val zipFile = java.util.zip.ZipFile(file)
                 val zipEntry = zipFile.getEntry("extension.json")
                 val inputStream = zipFile.getInputStream(zipEntry)
-                val extensionInfo = gson.fromJson(inputStream.reader(), ExtensionInfo::class.java)
+                val extensionInfo = inputStream.fromJsonStream<ExtensionInfo>()
 
                 availableExtensions[extensionInfo.name] = extensionInfo
             }
