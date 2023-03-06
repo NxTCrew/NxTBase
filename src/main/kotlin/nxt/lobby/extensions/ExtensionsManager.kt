@@ -4,18 +4,18 @@ import com.google.gson.Gson
 import com.google.gson.JsonElement
 import de.fruxz.ascend.extension.logging.getItsLogger
 import de.fruxz.ascend.json.fromJsonStream
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import nxt.lobby.extensions.types.ExtensionInfo
 import nxt.lobby.extensions.types.NxTExtension
+import nxt.lobby.reflection.ReflectionManager
 import org.bukkit.plugin.Plugin
 import java.io.File
 import java.io.FileOutputStream
 import java.net.HttpURLConnection
 import java.nio.charset.Charset
 
-class ExtensionsManager(private val mainPlugin: Plugin) {
+@OptIn(DelicateCoroutinesApi::class)
+class ExtensionsManager internal constructor(private val mainPlugin: Plugin, private val reflectionManager: ReflectionManager) {
 
     private val extensionsFolder = File(mainPlugin.dataFolder, "extensions")
     private  val gson = Gson()
@@ -27,8 +27,18 @@ class ExtensionsManager(private val mainPlugin: Plugin) {
         preLoadExtensions()
         runBlocking { checkDependencies() }
         loadExtensions()
+        GlobalScope.launch {
+            reflectionManager.loadExtensionReflections(loadedExtensions.values.toList())
+        }
     }
 
+    /**
+     * Preloads all extensions.
+     * This will load the extension.json from the extensions and add them to the [availableExtensions] map.
+     * @author NxTCrew
+     * @since 0.0.1
+     * @see ExtensionInfo
+     */
     private fun preLoadExtensions() {
         extensionsFolder.mkdirs()
         extensionsFolder.listFiles()?.forEach { file ->
@@ -46,6 +56,12 @@ class ExtensionsManager(private val mainPlugin: Plugin) {
         getItsLogger().info("Loaded ${availableExtensions.size} extensions.")
     }
 
+    /**
+     * Checks if the extensions have all dependencies loaded.
+     * If not, it will try to download the plugin from spiget.
+     * @author NxTCrew
+     * @since 0.0.1
+     */
     private suspend fun checkDependencies() {
         availableExtensions.forEach { (name, extensionInfo) ->
             if(extensionInfo.dependencies.isEmpty() && extensionInfo.pluginDependencies.isEmpty()) return@forEach
@@ -80,6 +96,14 @@ class ExtensionsManager(private val mainPlugin: Plugin) {
         getItsLogger().info("Checked dependencies.")
     }
 
+    /**
+     * Downloads a plugin from spiget.
+     * @param pluginName The name of the plugin.
+     * @param onSuccess The function that should be called when the plugin is downloaded.
+     * @throws Exception If the plugin could not be downloaded.
+     * @author NxTCrew
+     * @since 0.0.4
+     */
     private suspend fun downloadPlugin(pluginName: String, onSuccess : suspend (plugin: File) -> Unit = {}) {
         withContext(Dispatchers.IO) {
             val infoUrl = java.net.URL("https://api.spiget.org/v2/search/resources/$pluginName?sort=-downloads")
@@ -107,6 +131,14 @@ class ExtensionsManager(private val mainPlugin: Plugin) {
         }
     }
 
+    /**
+     * Loads all extensions.
+     * This will load the extensions in the correct order.
+     * @author NxTCrew
+     * @since 0.0.1
+     * @see ExtensionInfo
+     * @see NxTExtension
+     */
     private fun loadExtensions() {
         val classLoaderParent = javaClass.classLoader
         val classLoader = java.net.URLClassLoader(extensionsFolder.listFiles()?.map { it.toURI().toURL() }?.toTypedArray(), classLoaderParent)

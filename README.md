@@ -94,9 +94,7 @@ You need the following software to run this plugin:
 - [ ] Language system
   - [ ] Dynamic loading of languages
   - [ ] Language API
-- [ ] Command system
-  - [ ] Dynamic loading of commands
-  - [ ] Command API
+- [x] Dynamic loading of commands and listeners
 - [ ] Event system
   - [ ] Dynamic loading of events
   - [ ] Event API
@@ -127,6 +125,16 @@ Don't forget to give the project a star! Thanks again!
 3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
+
+### Branch naming
+
+* `feature/` for new features
+* `fix/` for bug fixes
+* `docs/` for documentation changes
+* `refactor/` for code changes that neither fixes a bug nor adds a feature
+* `style/` for formatting, missing semi colons, etc; no code change
+* `test/` for everything related to testing
+* `chore/` for updating build tasks, package manager configs, etc; no production code change
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

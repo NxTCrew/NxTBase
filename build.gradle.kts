@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "nxt"
-version = "0.0.5"
+version = "0.0.6"
 
 repositories {
     maven("https://repo.flawcra.cc/mirrors")
@@ -26,6 +26,8 @@ val shadows = listOf<String>(
 
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.19.3-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.19.3-R0.1-SNAPSHOT")
+    compileOnly("com.mojang:authlib:1.6.25")
     compileOnly("com.google.code.gson:gson:2.8.9")
 
     // Kotlin Base Dependencies
