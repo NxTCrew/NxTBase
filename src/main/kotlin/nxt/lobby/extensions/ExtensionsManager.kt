@@ -86,7 +86,6 @@ class ExtensionsManager(private val mainPlugin: Plugin) {
             val pluginInfo = infoUrl.readText(Charset.defaultCharset())
             val pluginId = gson.fromJson(pluginInfo, JsonElement::class.java).asJsonArray[0].asJsonObject["id"].asInt
 
-            println("PluginID: $pluginId")
 
             val url = java.net.URL("https://api.spiget.org/v2/resources/$pluginId/download")
             val fileToWrite = File(mainPlugin.dataFolder, "../$pluginName.jar")
@@ -109,6 +108,9 @@ class ExtensionsManager(private val mainPlugin: Plugin) {
     }
 
     private fun loadExtensions() {
+        val classLoaderParent = javaClass.classLoader
+        val classLoader = java.net.URLClassLoader(extensionsFolder.listFiles()?.map { it.toURI().toURL() }?.toTypedArray(), classLoaderParent)
+
         availableExtensions.toSortedMap { ex1, ex2 ->
             val ex1Info = availableExtensions[ex1]!!
             val ex2Info = availableExtensions[ex2]!!
@@ -131,12 +133,18 @@ class ExtensionsManager(private val mainPlugin: Plugin) {
             }
         }.forEach { (name, extensionInfo) ->
             try {
-                val extensionClass = Class.forName(extensionInfo.main)
-                val extension = extensionClass.getConstructor(Plugin::class.java, ExtensionInfo::class.java).newInstance(mainPlugin, extensionInfo) as NxTExtension
+                val extensionClass = classLoader.loadClass(extensionInfo.main)
+                val constructor = extensionClass.getConstructor()
+                constructor.isAccessible = true
+                val extension = constructor.newInstance() as NxTExtension
+                extension.mainPlugin = mainPlugin
+                extension.pluginInfo = extensionInfo
+
                 loadedExtensions[name] = extension
+                extension.onLoad()
             } catch (e: Exception) {
                 getItsLogger().warning("Could not load extension $name.")
-                getItsLogger().warning(e.message)
+                getItsLogger().warning(e.stackTraceToString())
             }
         }
 

@@ -6,15 +6,15 @@ import java.io.File
 abstract class NxTExtension() {
 
     lateinit var pluginInfo: ExtensionInfo
-    private lateinit var mainPlugin: Plugin
+        internal set // Only the ExtensionsManager should be able to set this
+
+    lateinit var mainPlugin: Plugin
+        internal set // Only the ExtensionsManager should be able to set this
 
     /**
-     * Creates a new extension. (Should not be called manually)
+     * Called when the extension is loaded.
      */
-    constructor(mainPlugin: Plugin, pluginInfo: ExtensionInfo) : this() {
-        this.mainPlugin = mainPlugin
-        this.pluginInfo = pluginInfo
-    }
+    abstract fun onLoad()
 
     /**
      * Called when the extension is enabled.
@@ -22,12 +22,11 @@ abstract class NxTExtension() {
     abstract fun onEnable()
 
     /**
-     * Called when the extension is disabled.
+     * Called when the extension is unloaded.
      */
     abstract fun onDisable()
 
-    val dataFolder
+
+    val dataFolder: File
         get() = File(mainPlugin.dataFolder, "extensions/${pluginInfo.name}")
-
-
 }
