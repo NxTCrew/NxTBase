@@ -15,7 +15,7 @@ repositories {
     maven("https://repo.flawcra.cc/mirrors")
 }
 
-val shadows = listOf<String>(
+val shadows = listOf(
     "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.10",  // Kotlin Standard Library
     "net.oneandone.reflections8:reflections8:0.11.7", // Library for Reflections (Dynamic Class Loading)
     "org.javassist:javassist:3.29.2-GA",             // Library for Reflections (Dynamic Class Loading)
@@ -83,6 +83,14 @@ java {
 publishing {
     repositories {
         mavenLocal()
+        maven {
+            name = "FlawcraReleases"
+            url = uri("https://repo.flawcra.cc/releases")
+            credentials {
+                username = System.getenv("FLAWCRA_REPO_USER")
+                password = System.getenv("FLAWCRA_REPO_KEY")
+            }
+        }
     }
     publications {
         create<MavenPublication>("maven") {
