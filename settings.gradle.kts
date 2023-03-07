@@ -1,3 +1,3 @@
 
-rootProject.name = "nxtlobby"
+rootProject.name = "nxtbase"
 

@@ -87,7 +87,7 @@ publishing {
 
         maven {
             name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/NxTCrew/NxTLobby")
+            url = uri("https://maven.pkg.github.com/NxTCrew/NxTBase")
             credentials {
                 username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
                 password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
