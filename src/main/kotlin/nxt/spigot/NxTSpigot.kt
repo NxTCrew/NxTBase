@@ -1,9 +1,9 @@
-package nxt.lobby
+package nxt.spigot
 
-import nxt.lobby.extensions.ExtensionsManager
+import nxt.base.extensions.ExtensionsManager
 import org.bukkit.plugin.java.JavaPlugin
 
-class NxTLobby : JavaPlugin() {
+class NxTSpigot : JavaPlugin() {
 
     lateinit var extensionsManager: ExtensionsManager
 

@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "nxt"
-version = "0.0.5"
+version = "0.1.0"
 
 repositories {
     maven("https://repo.flawcra.cc/mirrors")
@@ -65,7 +65,7 @@ tasks {
     withType<ShadowJar> {
         mergeServiceFiles()
         configurations = listOf(project.configurations.shadow.get())
-        archiveFileName.set("NxTLobby.jar")
+        archiveFileName.set("NxT.jar")
     }
 }
 

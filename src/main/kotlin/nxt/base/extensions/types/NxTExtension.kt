@@ -1,4 +1,4 @@
-package nxt.lobby.extensions.types
+package nxt.base.extensions.types
 
 import org.bukkit.plugin.Plugin
 import java.io.File

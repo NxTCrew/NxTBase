@@ -27,7 +27,7 @@
   </a>
 
   <p align="center">
-    Your next lobby system
+    Your NxT minecraft ecosystem
     <br />
     <a href="https://github.com/NxTCrew/NxTBase/wiki"><strong>Explore the docs »</strong></a>
     <br />
@@ -43,7 +43,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-NxT is a entire ecosystem of extensions for Minecraft network. This is the base plugin of the ecosystem, which can load extensions and provide a base for them.
+NxT is a entire ecosystem of extensions for Minecraft networks. This is the base plugin of the ecosystem, which can load extensions and provide a base for them.
 You, as a User, can simple choose from a variety of extensions and install them to your server. You can also create your own extensions and share them with the community.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
