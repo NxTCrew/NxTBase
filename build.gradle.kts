@@ -6,6 +6,7 @@ plugins {
     kotlin("plugin.serialization") version "1.8.10"
     id("com.github.johnrengelman.shadow") version "7.1.2"
     id("maven-publish")
+    id("org.sonarqube") version "3.5.0.2730"
 }
 
 group = "nxt"
@@ -78,6 +79,12 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
     withJavadocJar()
     withSourcesJar()
+}
+
+sonar {
+    properties {
+        property("sonar.projectKey", "NxTCrew_NxTBase_AYa9AgdbUqCxtis1paPn")
+    }
 }
 
 publishing {
