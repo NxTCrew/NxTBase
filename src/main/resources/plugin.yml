@@ -1,5 +1,6 @@
-name: NxTLobby
-main: nxt.lobby.NxTLobby
+name: NxT
+main: nxt.spigot.NxTSpigot
+description: NxT is a entire ecosystem of extensions for Minecraft networks.
 version: "${project.version}"
 api-version: 1.19
 author: NxT

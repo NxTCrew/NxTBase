@@ -1,4 +1,4 @@
-package nxt.lobby.extensions
+package nxt.base.extensions
 
 import com.google.gson.Gson
 import com.google.gson.JsonElement
@@ -7,8 +7,8 @@ import de.fruxz.ascend.json.fromJsonStream
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import nxt.lobby.extensions.types.ExtensionInfo
-import nxt.lobby.extensions.types.NxTExtension
+import nxt.base.extensions.types.ExtensionInfo
+import nxt.base.extensions.types.NxTExtension
 import org.bukkit.plugin.Plugin
 import java.io.File
 import java.io.FileOutputStream
