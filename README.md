@@ -74,7 +74,7 @@ You need the following software to run this plugin:
 
 ### Installation
 
-1. Download the latest [release](releases)
+1. Download the latest [release](https://github.com/NxTCrew/NxTBase/releases)
 2. Upload the plugin to your server
 3. Start your server and enjoy!
 4. Configure the plugin to your liking in the `plugins/NxT/config.yml` file
