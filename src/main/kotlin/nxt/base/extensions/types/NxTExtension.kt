@@ -1,6 +1,6 @@
 package nxt.base.extensions.types
 
-import org.bukkit.plugin.Plugin
+import nxt.base.abstraction.NxTPlugin
 import java.io.File
 
 abstract class NxTExtension() {
@@ -8,7 +8,7 @@ abstract class NxTExtension() {
     lateinit var pluginInfo: ExtensionInfo
         internal set // Only the ExtensionsManager should be able to set this
 
-    lateinit var mainPlugin: Plugin
+    lateinit var mainPlugin: NxTPlugin
         internal set // Only the ExtensionsManager should be able to set this
 
     /**
