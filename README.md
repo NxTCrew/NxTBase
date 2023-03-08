@@ -117,7 +117,7 @@ You need the following software to run this plugin:
 - [ ] API
 - [ ] Documentation
 
-See the [open issues](issues) for a full list of proposed features (and known issues).
+See the [open issues](https://github.com/NxTCrew/NxTBase/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
