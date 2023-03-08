@@ -192,9 +192,7 @@ Project Link: [https://github.com/NxTCrew/NxTBase](https://github.com/NxTCrew/Nx
 [license-shield]: https://img.shields.io/github/license/NxTCrew/NxTBase.svg?style=for-the-badge
 [license-url]: https://github.com/orgs/NxTCrew/NxTBase/main/LICENSE
 
-[sonar-project-url]: https://qube.flawcra.cc/dashboard?id=NxTCrew_NxTBase_AYa9AgdbUqCxtis1paPn
-[sonar-maintainability]: https://qube.flawcra.cc/api/project_badges/measure?project=NxTCrew_NxTBase_AYa9AgdbUqCxtis1paPn&metric=sqale_rating
-[sonar-reliability]: https://qube.flawcra.cc/api/project_badges/measure?project=NxTCrew_NxTBase_AYa9AgdbUqCxtis1paPn&metric=reliability_rating
+
 
 
 [Spigot]: https://img.shields.io/badge/Spigot-1.19+-green.svg?style=for-the-badge
