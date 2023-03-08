@@ -14,8 +14,8 @@
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
-[ [Maintainability][sonar-maintainability]][sonar-project-url]
-[ [Reliability][sonar-reliability]][sonar-project-url]
+[![Maintainability][sonar-maintainability]][sonar-project-url]
+[![Reliability][sonar-reliability]][sonar-project-url]
 
 
 
