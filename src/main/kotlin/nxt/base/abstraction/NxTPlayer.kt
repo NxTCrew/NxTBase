@@ -1,6 +1,6 @@
 package nxt.base.abstraction
 
-import java.util.UUID
+import java.util.*
 
 abstract class NxTPlayer(open val uuid: UUID) {
 

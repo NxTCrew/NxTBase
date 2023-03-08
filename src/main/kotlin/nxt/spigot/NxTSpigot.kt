@@ -21,7 +21,8 @@ class NxTSpigot : JavaPlugin() {
     override fun onEnable() {
 
         NxTBase.instance.reflectionManager = ReflectionManager(SpigotNxTPlugin(this))
-        NxTBase.instance.extensionsManager = ExtensionsManager(SpigotNxTPlugin(this), NxTBase.instance.reflectionManager)
+        NxTBase.instance.extensionsManager =
+            ExtensionsManager(SpigotNxTPlugin(this), NxTBase.instance.reflectionManager)
         NxTBase.instance.onEnable()
 
     }
