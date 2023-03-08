@@ -1,4 +1,4 @@
-package nxt.lobby.reflection.types
+package nxt.base.reflection.types
 
 import org.bukkit.permissions.PermissionDefault
 

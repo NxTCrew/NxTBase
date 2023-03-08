@@ -1,7 +1,7 @@
-package nxt.lobby.extensions.commands
+package nxt.base.commands
 
 import nxt.lobby.NxTLobby
-import nxt.lobby.reflection.types.NxTCommand
+import nxt.base.reflection.types.NxTCommand
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender

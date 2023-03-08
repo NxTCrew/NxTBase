@@ -1,11 +1,10 @@
-package nxt.lobby.reflection
+package nxt.base.reflection
 
 import de.fruxz.ascend.extension.logging.getItsLogger
 import kotlinx.coroutines.*
 import nxt.lobby.extensions.types.NxTExtension
-import nxt.lobby.reflection.types.NxTCommand
+import nxt.base.reflection.types.NxTCommand
 import org.bukkit.Bukkit
-import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandMap
 import org.bukkit.command.PluginCommand
