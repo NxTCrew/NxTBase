@@ -82,8 +82,10 @@ internal class ReflectionManager internal constructor(private val mainPlugin: Nx
             for (clazz in reflections.getTypesAnnotatedWith(NxTCommand::class.java)) {
                 try {
                     val command = registerCommand(clazz)
-                    loadedCommands.add(command)
-                    amountCommands++
+                    if (command != null) {
+                        loadedCommands.add(command)
+                        amountCommands++
+                    }
                 } catch (exception: InstantiationError) {
                     exception.printStackTrace()
                 } catch (exception: IllegalAccessException) {
@@ -96,7 +98,7 @@ internal class ReflectionManager internal constructor(private val mainPlugin: Nx
         return timeForCommands
     }
 
-    internal fun registerCommand(clazz: Class<*>): PluginCommand {
+    internal fun registerCommand(clazz: Class<*>): PluginCommand? {
         println("Found NxTCommand in ${clazz.packageName}.${clazz.name}")
         val annotation = clazz.getAnnotation(NxTCommand::class.java)
         val pluginClass: Class<PluginCommand> = PluginCommand::class.java
@@ -104,7 +106,8 @@ internal class ReflectionManager internal constructor(private val mainPlugin: Nx
 
         constructor.isAccessible = true
 
-        val command: PluginCommand = constructor.newInstance(annotation.name, mainPlugin)
+        if (mainPlugin !is SpigotNxTPlugin) return null
+        val command: PluginCommand = constructor.newInstance(annotation.name, mainPlugin.spigotPlugin)
 
         command.aliases = annotation.aliases.toList()
         command.description = annotation.description

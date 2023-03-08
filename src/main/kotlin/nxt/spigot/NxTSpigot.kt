@@ -19,7 +19,6 @@ class NxTSpigot : JavaPlugin() {
     }
 
     // Plugin startup logic
-    @OptIn(DelicateCoroutinesApi::class)
     override fun onEnable() {
 
         NxTBase.instance.reflectionManager = ReflectionManager(SpigotNxTPlugin(this))

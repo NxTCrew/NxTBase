@@ -4,17 +4,16 @@ import com.google.gson.Gson
 import com.google.gson.JsonElement
 import de.fruxz.ascend.extension.logging.getItsLogger
 import de.fruxz.ascend.json.fromJsonStream
-import kotlinx.coroutines.*
-import nxt.base.reflection.ReflectionManager
-import nxt.base.reflection.types.NxTCommand
-import org.bukkit.event.Listener
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import nxt.base.NxTBase
 import nxt.base.abstraction.NxTPlugin
 import nxt.base.extensions.types.ExtensionInfo
 import nxt.base.extensions.types.NxTExtension
+import nxt.base.reflection.ReflectionManager
+import nxt.base.reflection.types.NxTCommand
+import org.bukkit.event.Listener
 import java.io.File
 import java.io.FileOutputStream
 import java.net.HttpURLConnection
@@ -23,7 +22,7 @@ import java.nio.charset.Charset
 
 class ExtensionsManager internal constructor(private val mainPlugin: NxTPlugin, private val reflectionManager: ReflectionManager) {
 
-    private val extensionsFolder = File(mainPlugin.dataFolder, "extensions")
+    private val extensionsFolder = File(mainPlugin.dataFolder, "extensions").let { if (!it.exists()) it.mkdirs(); it }
     private  val gson = Gson()
 
     private val availableExtensions = mutableMapOf<String, ExtensionInfo>()
