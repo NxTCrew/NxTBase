@@ -4,31 +4,77 @@ import com.google.gson.Gson
 import com.google.gson.JsonElement
 import de.fruxz.ascend.extension.logging.getItsLogger
 import de.fruxz.ascend.json.fromJsonStream
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import nxt.base.NxTBase
 import nxt.base.abstraction.NxTPlugin
 import nxt.base.extensions.types.ExtensionInfo
 import nxt.base.extensions.types.NxTExtension
+import nxt.base.reflection.ReflectionManager
+import nxt.base.reflection.types.NxTCommand
+import org.bukkit.command.PluginCommand
+import org.bukkit.event.Listener
 import java.io.File
 import java.io.FileOutputStream
 import java.net.HttpURLConnection
+import java.net.URLClassLoader
 import java.nio.charset.Charset
 
-class ExtensionsManager(private val mainPlugin: NxTPlugin) {
+class ExtensionsManager internal constructor(private val mainPlugin: NxTPlugin, private val reflectionManager: ReflectionManager) {
 
-    private val extensionsFolder = File(mainPlugin.dataFolder, "extensions")
+    private val extensionsFolder = File(mainPlugin.dataFolder, "extensions").let { if (!it.exists()) it.mkdirs(); it }
     private  val gson = Gson()
 
     private val availableExtensions = mutableMapOf<String, ExtensionInfo>()
-    private val loadedExtensions = mutableMapOf<String, NxTExtension>()
+    val loadedExtensions = mutableMapOf<String, NxTExtension>()
+
+    private val extensionCommands = mutableMapOf<String, List<Class<*>>>()
+    private val extensionListeners = mutableMapOf<String, List<Class<out Listener>>>()
+
+    private val extensionPluginCommands = mutableMapOf<String, List<PluginCommand>>()
+    private val extensionPluginListeners = mutableMapOf<String, List<Listener>>()
+
+    private val classLoaderParent = javaClass.classLoader
+    private val classLoader = URLClassLoader(extensionsFolder.listFiles()?.map { it.toURI().toURL() }?.toTypedArray(), classLoaderParent)
+
+    private val loadedClasses = mutableMapOf<String, Class<*>>()
 
     init {
         preLoadExtensions()
         runBlocking { checkDependencies() }
         loadExtensions()
+        enableExtensions()
     }
 
+    internal fun reloadExtensions() {
+        unloadExtensions()
+        preLoadExtensions()
+        runBlocking { checkDependencies() }
+        loadExtensions()
+        enableExtensions()
+    }
+
+    internal fun unloadExtensions() {
+        loadedExtensions.values.forEach { it.onDisable() }
+
+        reflectionManager.unregisterCommands(*extensionPluginCommands.values.flatten().toTypedArray())
+        reflectionManager.unregisterListeners(*extensionPluginListeners.values.flatten().toTypedArray())
+
+        loadedExtensions.clear()
+        loadedClasses.clear()
+        extensionCommands.clear()
+        extensionListeners.clear()
+        extensionPluginCommands.clear()
+        extensionPluginListeners.clear()
+    }
+
+    /**
+     * Preloads all extensions.
+     * This will load the extension.json from the extensions and add them to the [availableExtensions] map.
+     * @author NxTCrew
+     * @since 0.0.1
+     * @see ExtensionInfo
+     */
     private fun preLoadExtensions() {
         extensionsFolder.mkdirs()
         extensionsFolder.listFiles()?.forEach { file ->
@@ -39,6 +85,23 @@ class ExtensionsManager(private val mainPlugin: NxTPlugin) {
                 val inputStream = zipFile.getInputStream(zipEntry)
                 val extensionInfo = inputStream.fromJsonStream<ExtensionInfo>()
 
+                val jarEntries = zipFile.entries()
+                jarEntries?.toList()?.forEach { entry ->
+                    if (!entry.name.endsWith(".class")) return@forEach
+                    val className = entry.name.replace('/', '.').dropLast(6)
+                    val clazz = classLoader.loadClass(className)
+                    if (clazz.annotations.any { it is NxTCommand }) {
+                        extensionCommands[extensionInfo.name] = extensionCommands.getOrDefault(extensionInfo.name, mutableListOf()).plus(clazz)
+                    }
+                    try {
+                        val listener = clazz.asSubclass(Listener::class.java)
+                        extensionListeners[extensionInfo.name] = extensionListeners.getOrDefault(extensionInfo.name, mutableListOf()).plus(listener)
+                    } catch (e: ClassCastException) {
+                        // Ignore
+                    }
+                    loadedClasses["${clazz.packageName}.${clazz.name}"] = clazz
+                }
+
                 availableExtensions[extensionInfo.name] = extensionInfo
             }
         }
@@ -46,6 +109,12 @@ class ExtensionsManager(private val mainPlugin: NxTPlugin) {
         getItsLogger().info("Loaded ${availableExtensions.size} extensions.")
     }
 
+    /**
+     * Checks if the extensions have all dependencies loaded.
+     * If not, it will try to download the plugin from spiget.
+     * @author NxTCrew
+     * @since 0.0.1
+     */
     private suspend fun checkDependencies() {
         availableExtensions.forEach { (name, extensionInfo) ->
             if(extensionInfo.dependencies.isEmpty() && extensionInfo.pluginDependencies.isEmpty()) return@forEach
@@ -80,8 +149,16 @@ class ExtensionsManager(private val mainPlugin: NxTPlugin) {
         getItsLogger().info("Checked dependencies.")
     }
 
+    /**
+     * Downloads a plugin from spiget.
+     * @param pluginName The name of the plugin.
+     * @param onSuccess The function that should be called when the plugin is downloaded.
+     * @throws Exception If the plugin could not be downloaded.
+     * @author NxTCrew
+     * @since 0.0.4
+     */
     private suspend fun downloadPlugin(pluginName: String, onSuccess : suspend (plugin: File) -> Unit = {}) {
-        withContext(Dispatchers.IO) {
+        withContext(NxTBase.instance.ioDispatcher) {
             val infoUrl = java.net.URL("https://api.spiget.org/v2/search/resources/$pluginName?sort=-downloads")
             val pluginInfo = infoUrl.readText(Charset.defaultCharset())
             val pluginId = gson.fromJson(pluginInfo, JsonElement::class.java).asJsonArray[0].asJsonObject["id"].asInt
@@ -107,10 +184,15 @@ class ExtensionsManager(private val mainPlugin: NxTPlugin) {
         }
     }
 
+    /**
+     * Loads all extensions.
+     * This will load the extensions in the correct order.
+     * @author NxTCrew
+     * @since 0.0.1
+     * @see ExtensionInfo
+     * @see NxTExtension
+     */
     private fun loadExtensions() {
-        val classLoaderParent = javaClass.classLoader
-        val classLoader = java.net.URLClassLoader(extensionsFolder.listFiles()?.map { it.toURI().toURL() }?.toTypedArray(), classLoaderParent)
-
         availableExtensions.toSortedMap { ex1, ex2 ->
             val ex1Info = availableExtensions[ex1]!!
             val ex2Info = availableExtensions[ex2]!!
@@ -140,6 +222,18 @@ class ExtensionsManager(private val mainPlugin: NxTPlugin) {
                 extension.mainPlugin = mainPlugin
                 extension.pluginInfo = extensionInfo
 
+                extensionCommands[extensionInfo.name]?.distinct()?.mapNotNull(reflectionManager::registerCommand).let {
+                    if(it != null) {
+                        reflectionManager.registerCommands(*it.toTypedArray())
+                        extensionPluginCommands[extensionInfo.name] = it
+                    }
+                }
+                extensionListeners[extensionInfo.name]?.distinct()?.mapNotNull(reflectionManager::registerListener).let {
+                    if(it != null) {
+                        extensionPluginListeners[extensionInfo.name] = it
+                    }
+                }
+
                 loadedExtensions[name] = extension
                 extension.onLoad()
             } catch (e: Exception) {
@@ -152,6 +246,23 @@ class ExtensionsManager(private val mainPlugin: NxTPlugin) {
     }
 
 
+    /**
+     * Enables all extensions.
+     * @author NxTCrew
+     * @since 0.1.1
+     * @see NxTExtension
+     */
+    private fun enableExtensions() {
+        loadedExtensions.forEach { (name, extension) ->
+            try {
+                extension.onEnable()
+            } catch (e: Exception) {
+                getItsLogger().warning("Could not enable extension $name.")
+                getItsLogger().warning(e.stackTraceToString())
+            }
+        }
 
+        getItsLogger().info("Enabled ${loadedExtensions.size} extensions.")
+    }
 
 }

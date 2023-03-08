@@ -17,6 +17,7 @@
 
 
 
+
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
@@ -38,7 +39,9 @@
   </p>
 </div>
 
-
+[![Maintainability][sonar-maintainability]][sonar-project-url]
+[![Reliability][sonar-reliability]][sonar-project-url]
+[![Security][sonar-security]][sonar-project-url]
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
@@ -88,6 +91,9 @@ You need the following software to run this plugin:
 
 - [ ] Extension system
   - [x] Dynamic loading of extensions
+  - [ ] Extension Ingame Command
+     - [x] Simple extension management with list and reload
+     - [ ] Fully featured extension management
   - [ ] Extension API
   - [ ] Extension examples
   - [ ] Extension documentation
@@ -95,9 +101,7 @@ You need the following software to run this plugin:
 - [ ] Language system
   - [ ] Dynamic loading of languages
   - [ ] Language API
-- [ ] Command system
-  - [ ] Dynamic loading of commands
-  - [ ] Command API
+- [x] Dynamic loading of commands and listeners
 - [ ] Event system
   - [ ] Dynamic loading of events
   - [ ] Event API
@@ -132,6 +136,16 @@ Don't forget to give the project a star! Thanks again!
 3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
+
+### Branch naming
+
+* `feature/` for new features
+* `fix/` for bug fixes
+* `docs/` for documentation changes
+* `refactor/` for code changes that neither fixes a bug nor adds a feature
+* `style/` for formatting, missing semi colons, etc; no code change
+* `test/` for everything related to testing
+* `chore/` for updating build tasks, package manager configs, etc; no production code change
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -178,6 +192,11 @@ Project Link: [https://github.com/NxTCrew/NxTBase](https://github.com/NxTCrew/Nx
 [issues-url]: https://github.com/NxTCrew/NxTBase/issues
 [license-shield]: https://img.shields.io/github/license/NxTCrew/NxTBase.svg?style=for-the-badge
 [license-url]: https://github.com/orgs/NxTCrew/NxTBase/main/LICENSE
+
+[sonar-project-url]: https://qube.flawcra.cc/dashboard?id=NxTCrew_NxTBase_AYa9AgdbUqCxtis1paPn
+[sonar-maintainability]: https://qube.flawcra.cc/api/project_badges/measure?project=NxTCrew_NxTBase_AYa9AgdbUqCxtis1paPn&metric=sqale_rating
+[sonar-reliability]: https://qube.flawcra.cc/api/project_badges/measure?project=NxTCrew_NxTBase_AYa9AgdbUqCxtis1paPn&metric=reliability_rating
+[sonar-security]: https://qube.flawcra.cc/api/project_badges/measure?project=NxTCrew_NxTBase_AYa9AgdbUqCxtis1paPn&metric=security_rating
 
 [Spigot]: https://img.shields.io/badge/Spigot-1.19+-green.svg?style=for-the-badge
 [Spigot-url]: https://www.spigotmc.org/
