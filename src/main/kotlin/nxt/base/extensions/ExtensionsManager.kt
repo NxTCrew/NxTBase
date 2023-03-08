@@ -11,6 +11,7 @@ import org.bukkit.event.Listener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import nxt.base.NxTBase
 import nxt.base.abstraction.NxTPlugin
 import nxt.base.extensions.types.ExtensionInfo
 import nxt.base.extensions.types.NxTExtension
@@ -20,7 +21,6 @@ import java.net.HttpURLConnection
 import java.net.URLClassLoader
 import java.nio.charset.Charset
 
-@OptIn(DelicateCoroutinesApi::class)
 class ExtensionsManager internal constructor(private val mainPlugin: NxTPlugin, private val reflectionManager: ReflectionManager) {
 
     private val extensionsFolder = File(mainPlugin.dataFolder, "extensions")
@@ -38,7 +38,7 @@ class ExtensionsManager internal constructor(private val mainPlugin: NxTPlugin, 
         preLoadExtensions()
         runBlocking { checkDependencies() }
         loadExtensions()
-        GlobalScope.launch {
+        NxTBase.instance.coroutineScope.launch {
             reflectionManager.loadExtensionReflections(loadedExtensions.values.toList())
         }
     }
@@ -50,7 +50,7 @@ class ExtensionsManager internal constructor(private val mainPlugin: NxTPlugin, 
         preLoadExtensions()
         runBlocking { checkDependencies() }
         loadExtensions()
-        GlobalScope.launch {
+        NxTBase.instance.coroutineScope.launch {
             reflectionManager.loadExtensionReflections(loadedExtensions.values.toList())
         }
     }
@@ -169,7 +169,7 @@ class ExtensionsManager internal constructor(private val mainPlugin: NxTPlugin, 
      * @since 0.0.4
      */
     private suspend fun downloadPlugin(pluginName: String, onSuccess : suspend (plugin: File) -> Unit = {}) {
-        withContext(Dispatchers.IO) {
+        withContext(NxTBase.instance.ioDispatcher) {
             val infoUrl = java.net.URL("https://api.spiget.org/v2/search/resources/$pluginName?sort=-downloads")
             val pluginInfo = infoUrl.readText(Charset.defaultCharset())
             val pluginId = gson.fromJson(pluginInfo, JsonElement::class.java).asJsonArray[0].asJsonObject["id"].asInt

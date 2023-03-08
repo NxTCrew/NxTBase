@@ -1,7 +1,7 @@
 package nxt.spigot.commands
 
+import nxt.base.NxTBase
 import nxt.base.reflection.types.NxTCommand
-import nxt.spigot.NxTSpigot
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -19,12 +19,12 @@ class ExtensionsCommand : CommandExecutor, TabExecutor {
 
         when(args.getOrNull(0)) {
             "reload" -> {
-                NxTSpigot.instance.extensionsManager.reloadExtensions()
+                NxTBase.instance.extensionsManager.reloadExtensions()
                 sender.sendMessage("§aExtensions reloaded!")
             }
             "list" -> {
                 sender.sendMessage("§aExtensions:")
-                NxTSpigot.instance.extensionsManager.loadedExtensions.forEach { (name, extension) ->
+                NxTBase.instance.extensionsManager.loadedExtensions.forEach { (name, extension) ->
                     sender.sendMessage("§7- §a$name §7(§a${extension.pluginInfo.version}§7)")
                 }
             }

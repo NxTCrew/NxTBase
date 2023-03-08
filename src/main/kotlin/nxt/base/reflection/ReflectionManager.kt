@@ -2,8 +2,11 @@ package nxt.base.reflection
 
 import de.fruxz.ascend.extension.logging.getItsLogger
 import kotlinx.coroutines.*
+import nxt.base.NxTBase
+import nxt.base.abstraction.NxTPlugin
 import nxt.base.extensions.types.NxTExtension
 import nxt.base.reflection.types.NxTCommand
+import nxt.spigot.abstraction.SpigotNxTPlugin
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandMap
@@ -24,7 +27,7 @@ import kotlin.time.measureTime
  * @author NxTCrew
  * @since 0.0.6
  */
-internal class ReflectionManager internal constructor(private val mainPlugin: Plugin) {
+internal class ReflectionManager internal constructor(private val mainPlugin: NxTPlugin) {
 
 
     /**
@@ -34,7 +37,7 @@ internal class ReflectionManager internal constructor(private val mainPlugin: Pl
      * @see Reflections
      */
     internal suspend fun loadBaseReflections() {
-        withContext(Dispatchers.IO) {
+        withContext(NxTBase.instance.ioDispatcher) {
             val baseName = "nxt"
             val reflections = Reflections(baseName)
             val timeForListeners = registerListeners(reflections, baseName)
@@ -52,7 +55,7 @@ internal class ReflectionManager internal constructor(private val mainPlugin: Pl
      * @see Reflections
      */
     internal suspend fun loadExtensionReflections(extensions: List<NxTExtension>) {
-        withContext(Dispatchers.IO) {
+        withContext(NxTBase.instance.ioDispatcher) {
             extensions.forEach { nxTExtension ->
                 val basePackage = nxTExtension::javaClass.get().packageName
 
@@ -145,7 +148,9 @@ internal class ReflectionManager internal constructor(private val mainPlugin: Pl
 
             val event = constructor.newInstance() as Listener
 
-            Bukkit.getPluginManager().registerEvents(event, mainPlugin)
+            if (mainPlugin is SpigotNxTPlugin) {
+                Bukkit.getPluginManager().registerEvents(event, mainPlugin.spigotPlugin)
+            }
 
             getItsLogger().info("Listener ${event.javaClass.simpleName} registered")
         } catch (exception: InstantiationError) {
