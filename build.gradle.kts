@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "nxt"
-version = "0.1.2-preview"
+version = "0.1.2"
 
 repositories {
     maven("https://repo.flawcra.cc/mirrors")
