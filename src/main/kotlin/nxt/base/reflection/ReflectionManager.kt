@@ -2,7 +2,7 @@ package nxt.base.reflection
 
 import de.fruxz.ascend.extension.logging.getItsLogger
 import kotlinx.coroutines.*
-import nxt.lobby.extensions.types.NxTExtension
+import nxt.base.extensions.types.NxTExtension
 import nxt.base.reflection.types.NxTCommand
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandExecutor
@@ -33,9 +33,9 @@ internal class ReflectionManager internal constructor(private val mainPlugin: Pl
      * @since 0.0.6
      * @see Reflections
      */
-    internal suspend fun loadLobbyReflections() {
+    internal suspend fun loadBaseReflections() {
         withContext(Dispatchers.IO) {
-            val baseName = "nxt.lobby"
+            val baseName = "nxt"
             val reflections = Reflections(baseName)
             val timeForListeners = registerListeners(reflections, baseName)
             val timeForCommands = registerCommands(reflections, baseName)

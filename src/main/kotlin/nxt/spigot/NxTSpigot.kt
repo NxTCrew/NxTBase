@@ -33,7 +33,7 @@ class NxTSpigot : JavaPlugin() {
 
         // Load commands and listeners
         GlobalScope.launch {
-            reflectionManager.loadLobbyReflections()
+            reflectionManager.loadBaseReflections()
         }
     }
 
