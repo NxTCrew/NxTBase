@@ -22,7 +22,7 @@ val shadows = listOf(
     "org.javassist:javassist:3.29.2-GA",             // Library for Reflections (Dynamic Class Loading)
     "io.ktor:ktor-client-core-jvm:2.2.3",               // Library for HTTP Requests
     "io.ktor:ktor-client-cio-jvm:2.2.3",                // Library for HTTP Requests
-    "com.github.TheFruxz:Ascend:22.0.0"
+    "com.github.TheFruxz:Ascend:2023.1"
 )
 
 dependencies {
