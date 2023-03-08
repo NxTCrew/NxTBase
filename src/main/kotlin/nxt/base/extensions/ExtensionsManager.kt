@@ -11,9 +11,9 @@ import org.bukkit.event.Listener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import nxt.base.abstraction.NxTPlugin
 import nxt.base.extensions.types.ExtensionInfo
 import nxt.base.extensions.types.NxTExtension
-import org.bukkit.plugin.Plugin
 import java.io.File
 import java.io.FileOutputStream
 import java.net.HttpURLConnection
@@ -21,8 +21,9 @@ import java.net.URLClassLoader
 import java.nio.charset.Charset
 
 @OptIn(DelicateCoroutinesApi::class)
-class ExtensionsManager internal constructor(private val mainPlugin: Plugin, private val reflectionManager: ReflectionManager) {
-    val extensionsFolder = File(mainPlugin.dataFolder, "extensions")
+class ExtensionsManager internal constructor(private val mainPlugin: NxTPlugin, private val reflectionManager: ReflectionManager) {
+
+    private val extensionsFolder = File(mainPlugin.dataFolder, "extensions")
     private  val gson = Gson()
 
     private val availableExtensions = mutableMapOf<String, ExtensionInfo>()

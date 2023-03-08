@@ -1,10 +1,10 @@
 package nxt.spigot
 
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import nxt.base.reflection.ReflectionManager
+import nxt.base.NxTBase
 import nxt.base.extensions.ExtensionsManager
+import nxt.base.reflection.ReflectionManager
+import nxt.spigot.abstraction.SpigotNxTPlugin
 import org.bukkit.plugin.java.JavaPlugin
 
 class NxTSpigot : JavaPlugin() {
@@ -18,30 +18,21 @@ class NxTSpigot : JavaPlugin() {
         instance = this
     }
 
-
-    lateinit var extensionsManager: ExtensionsManager
-    private lateinit var reflectionManager: ReflectionManager
-
-
     // Plugin startup logic
     @OptIn(DelicateCoroutinesApi::class)
     override fun onEnable() {
-        reflectionManager = ReflectionManager(this)
-        // Check for extensions updates
-        this.extensionsManager = ExtensionsManager(this, reflectionManager)
-        // Load config
 
-        // Load commands and listeners
-        GlobalScope.launch {
-            reflectionManager.loadBaseReflections()
-        }
+        NxTBase.instance.reflectionManager = ReflectionManager(SpigotNxTPlugin(this))
+        NxTBase.instance.extensionsManager = ExtensionsManager(SpigotNxTPlugin(this), NxTBase.instance.reflectionManager)
+        NxTBase.instance.onEnable()
+
     }
 
     // Plugin shutdown logic
     override fun onDisable() {
         // Run extensions shutdown
         // Save config
+        NxTBase.instance.onDisable()
     }
-
 
 }
