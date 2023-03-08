@@ -6,16 +6,17 @@ plugins {
     kotlin("plugin.serialization") version "1.8.10"
     id("com.github.johnrengelman.shadow") version "7.1.2"
     id("maven-publish")
+    id("org.sonarqube") version "4.0.0.2929"
 }
 
 group = "nxt"
-version = "0.0.6"
+version = "0.1.2"
 
 repositories {
     maven("https://repo.flawcra.cc/mirrors")
 }
 
-val shadows = listOf<String>(
+val shadows = listOf(
     "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.10",  // Kotlin Standard Library
     "net.oneandone.reflections8:reflections8:0.11.7", // Library for Reflections (Dynamic Class Loading)
     "org.javassist:javassist:3.29.2-GA",             // Library for Reflections (Dynamic Class Loading)
@@ -67,7 +68,7 @@ tasks {
     withType<ShadowJar> {
         mergeServiceFiles()
         configurations = listOf(project.configurations.shadow.get())
-        archiveFileName.set("NxTLobby.jar")
+        archiveFileName.set("NxT.jar")
     }
 }
 
@@ -82,23 +83,28 @@ java {
     withSourcesJar()
 }
 
+sonar {
+    properties {
+        property("sonar.projectKey", "NxTCrew_NxTBase_AYa9AgdbUqCxtis1paPn")
+    }
+}
+
 publishing {
     repositories {
-
         mavenLocal()
-
         maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/NxTCrew/NxTLobby")
+            name = "FlawcraReleases"
+            url = uri("https://repo.flawcra.cc/releases")
             credentials {
-                username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
-                password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
+                username = System.getenv("FLAWCRA_REPO_USER")
+                password = System.getenv("FLAWCRA_REPO_KEY")
             }
         }
     }
     publications {
-        register<MavenPublication>("gpr") {
-            from(components["java"])
+        create<MavenPublication>("maven") {
+            from(components["kotlin"])
+            artifact(tasks["shadowJar"])
         }
     }
 }

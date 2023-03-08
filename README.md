@@ -20,21 +20,21 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-<h3 align="center">NxTLobby</h3>
+<h3 align="center">NxTBase</h3>
 
-  <a href="https://github.com/NxTCrew/NxTLobby">
+  <a href="https://github.com/NxTCrew/NxTBase">
     <img src="images/nxtlogo-nobg.png" alt="Logo" width="80" height="80">
   </a>
 
   <p align="center">
-    Your next lobby system
+    Your NxT minecraft ecosystem
     <br />
-    <a href="https://github.com/NxTCrew/NxTLobby/wiki"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/NxTCrew/NxTBase/wiki"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/NxTCrew/NxTLobby/issues">Report Bug</a>
+    <a href="https://github.com/NxTCrew/NxTBase/issues">Report Bug</a>
     ·
-    <a href="https://github.com/NxTCrew/NxTLobby/issues">Request Feature</a>
+    <a href="https://github.com/NxTCrew/NxTBase/issues">Request Feature</a>
   </p>
 </div>
 
@@ -43,7 +43,8 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-NxT is a entire ecosystem of plugins for Minecraft servers. This is the lobby plugin of the ecosystem.
+NxT is a entire ecosystem of extensions for Minecraft networks. This is the base plugin of the ecosystem, which can load extensions and provide a base for them.
+You, as a User, can simple choose from a variety of extensions and install them to your server. You can also create your own extensions and share them with the community.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -73,10 +74,10 @@ You need the following software to run this plugin:
 
 ### Installation
 
-1. Download the latest [release](releases)
+1. Download the latest [release](https://github.com/NxTCrew/NxTBase/releases)
 2. Upload the plugin to your server
 3. Start your server and enjoy!
-4. Configure the plugin to your liking in the `plugins/NxTLobby/config.yml` file
+4. Configure the plugin to your liking in the `plugins/NxT/config.yml` file
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -101,6 +102,10 @@ You need the following software to run this plugin:
 - [ ] Event system
   - [ ] Dynamic loading of events
   - [ ] Event API
+- [ ] Multiplatform support
+  - [ ] BungeeCord support
+  - [ ] Velocity support
+  - [x] Spigot support
 - [ ] GUI system
     - [ ] GUI API
     - [ ] GUI examples
@@ -155,7 +160,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Project Link: [https://github.com/NxTCrew/NxTLobby](https://github.com/NxTCrew/NxTLobby)
+Project Link: [https://github.com/NxTCrew/NxTBase](https://github.com/NxTCrew/NxTBase)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -174,16 +179,16 @@ Project Link: [https://github.com/NxTCrew/NxTLobby](https://github.com/NxTCrew/N
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/NxTCrew/NxTLobby.svg?style=for-the-badge
-[contributors-url]: https://github.com/orgs/NxTCrew/NxTLobby/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/NxTCrew/NxTLobby.svg?style=for-the-badge
-[forks-url]: https://github.com/NxTCrew/NxTLobby/network/members
-[stars-shield]: https://img.shields.io/github/stars/NxTCrew/NxTLobby.svg?style=for-the-badge
-[stars-url]: https://github.com/NxTCrew/NxTLobby/stargazers
-[issues-shield]: https://img.shields.io/github/issues/NxTCrew/NxTLobby.svg?style=for-the-badge
-[issues-url]: https://github.com/NxTCrew/NxTLobby/issues
-[license-shield]: https://img.shields.io/github/license/NxTCrew/NxTLobby.svg?style=for-the-badge
-[license-url]: https://github.com/orgs/NxTCrew/NxTLobby/main/LICENSE
+[contributors-shield]: https://img.shields.io/github/contributors/NxTCrew/NxTBase.svg?style=for-the-badge
+[contributors-url]: https://github.com/orgs/NxTCrew/NxTBase/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/NxTCrew/NxTBase.svg?style=for-the-badge
+[forks-url]: https://github.com/NxTCrew/NxTBase/network/members
+[stars-shield]: https://img.shields.io/github/stars/NxTCrew/NxTBase.svg?style=for-the-badge
+[stars-url]: https://github.com/NxTCrew/NxTBase/stargazers
+[issues-shield]: https://img.shields.io/github/issues/NxTCrew/NxTBase.svg?style=for-the-badge
+[issues-url]: https://github.com/NxTCrew/NxTBase/issues
+[license-shield]: https://img.shields.io/github/license/NxTCrew/NxTBase.svg?style=for-the-badge
+[license-url]: https://github.com/orgs/NxTCrew/NxTBase/main/LICENSE
 
 [Spigot]: https://img.shields.io/badge/Spigot-1.19+-green.svg?style=for-the-badge
 [Spigot-url]: https://www.spigotmc.org/

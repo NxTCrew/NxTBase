@@ -1,15 +1,18 @@
-package nxt.lobby.extensions
+package nxt.base.extensions
 
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import de.fruxz.ascend.extension.logging.getItsLogger
 import de.fruxz.ascend.json.fromJsonStream
 import kotlinx.coroutines.*
-import nxt.lobby.extensions.types.ExtensionInfo
-import nxt.lobby.extensions.types.NxTExtension
-import nxt.lobby.reflection.ReflectionManager
-import nxt.lobby.reflection.types.NxTCommand
+import nxt.base.reflection.ReflectionManager
+import nxt.base.reflection.types.NxTCommand
 import org.bukkit.event.Listener
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import nxt.base.extensions.types.ExtensionInfo
+import nxt.base.extensions.types.NxTExtension
 import org.bukkit.plugin.Plugin
 import java.io.File
 import java.io.FileOutputStream

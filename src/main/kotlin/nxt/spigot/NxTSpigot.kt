@@ -1,16 +1,17 @@
-package nxt.lobby
+package nxt.spigot
 
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import nxt.lobby.extensions.ExtensionsManager
-import nxt.lobby.reflection.ReflectionManager
+import nxt.base.reflection.ReflectionManager
+import nxt.base.extensions.ExtensionsManager
 import org.bukkit.plugin.java.JavaPlugin
 
-class NxTLobby : JavaPlugin() {
+class NxTSpigot : JavaPlugin() {
 
     companion object {
-        lateinit var instance: NxTLobby
+        lateinit var instance: NxTSpigot
+            private set
     }
 
     init {
