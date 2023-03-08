@@ -7,15 +7,15 @@ import de.fruxz.ascend.json.fromJsonStream
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import nxt.base.abstraction.NxTPlugin
 import nxt.base.extensions.types.ExtensionInfo
 import nxt.base.extensions.types.NxTExtension
-import org.bukkit.plugin.Plugin
 import java.io.File
 import java.io.FileOutputStream
 import java.net.HttpURLConnection
 import java.nio.charset.Charset
 
-class ExtensionsManager(private val mainPlugin: Plugin) {
+class ExtensionsManager(private val mainPlugin: NxTPlugin) {
 
     private val extensionsFolder = File(mainPlugin.dataFolder, "extensions")
     private  val gson = Gson()
