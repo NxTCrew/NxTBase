@@ -4,7 +4,6 @@ import com.google.gson.Gson
 import com.google.gson.JsonElement
 import de.fruxz.ascend.extension.logging.getItsLogger
 import de.fruxz.ascend.json.fromJsonStream
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import nxt.base.NxTBase
@@ -13,6 +12,7 @@ import nxt.base.extensions.types.ExtensionInfo
 import nxt.base.extensions.types.NxTExtension
 import nxt.base.reflection.ReflectionManager
 import nxt.base.reflection.types.NxTCommand
+import org.bukkit.command.PluginCommand
 import org.bukkit.event.Listener
 import java.io.File
 import java.io.FileOutputStream
@@ -28,6 +28,12 @@ class ExtensionsManager internal constructor(private val mainPlugin: NxTPlugin, 
     private val availableExtensions = mutableMapOf<String, ExtensionInfo>()
     val loadedExtensions = mutableMapOf<String, NxTExtension>()
 
+    private val extensionCommands = mutableMapOf<String, List<Class<*>>>()
+    private val extensionListeners = mutableMapOf<String, List<Class<out Listener>>>()
+
+    private val extensionPluginCommands = mutableMapOf<String, List<PluginCommand>>()
+    private val extensionPluginListeners = mutableMapOf<String, List<Listener>>()
+
     private val classLoaderParent = javaClass.classLoader
     private val classLoader = URLClassLoader(extensionsFolder.listFiles()?.map { it.toURI().toURL() }?.toTypedArray(), classLoaderParent)
 
@@ -37,21 +43,29 @@ class ExtensionsManager internal constructor(private val mainPlugin: NxTPlugin, 
         preLoadExtensions()
         runBlocking { checkDependencies() }
         loadExtensions()
-        NxTBase.instance.coroutineScope.launch {
-            reflectionManager.loadExtensionReflections(loadedExtensions.values.toList())
-        }
+        enableExtensions()
     }
 
     internal fun reloadExtensions() {
-        loadedExtensions.values.forEach { it.onDisable() }
-        loadedExtensions.clear()
-        loadedClasses.clear()
+        unloadExtensions()
         preLoadExtensions()
         runBlocking { checkDependencies() }
         loadExtensions()
-        NxTBase.instance.coroutineScope.launch {
-            reflectionManager.loadExtensionReflections(loadedExtensions.values.toList())
-        }
+        enableExtensions()
+    }
+
+    internal fun unloadExtensions() {
+        loadedExtensions.values.forEach { it.onDisable() }
+
+        reflectionManager.unregisterCommands(*extensionPluginCommands.values.flatten().toTypedArray())
+        reflectionManager.unregisterListeners(*extensionPluginListeners.values.flatten().toTypedArray())
+
+        loadedExtensions.clear()
+        loadedClasses.clear()
+        extensionCommands.clear()
+        extensionListeners.clear()
+        extensionPluginCommands.clear()
+        extensionPluginListeners.clear()
     }
 
     /**
@@ -71,45 +85,21 @@ class ExtensionsManager internal constructor(private val mainPlugin: NxTPlugin, 
                 val inputStream = zipFile.getInputStream(zipEntry)
                 val extensionInfo = inputStream.fromJsonStream<ExtensionInfo>()
 
-                // Load all .class files from the jar file and add them to the class loader
-                /*val entries = zipFile.entries()
-                while (entries.hasMoreElements()) {
-                    val entry = entries.nextElement()
-                    if (entry.name.endsWith(".class")) {
-                        try {
-                            val clazz = Class.forName(entry.name.replace("/", ".").substringBeforeLast("."), false, classLoader)
-                            if (clazz.annotations.any { it is NxTCommand }) {
-                                reflectionManager.registerCommand(clazz)
-                            }
-                            try {
-                                val listener = clazz.asSubclass(Listener::class.java)
-                                reflectionManager.registerListener(listener)
-                            } catch (e: ClassCastException) {
-                                // Ignore
-                            }
-                            loadedClasses["${clazz.packageName}.${clazz.name}"] = clazz
-                            println("Loaded class ${clazz.packageName}.${clazz.name}")
-                        } catch (e: ClassNotFoundException) {
-                            getItsLogger().warning("Could not load class ${entry.name.replace("/", ".").substringBeforeLast(".")}")
-                        }
-                    }
-                }*/
                 val jarEntries = zipFile.entries()
                 jarEntries?.toList()?.forEach { entry ->
                     if (!entry.name.endsWith(".class")) return@forEach
                     val className = entry.name.replace('/', '.').dropLast(6)
                     val clazz = classLoader.loadClass(className)
                     if (clazz.annotations.any { it is NxTCommand }) {
-                        reflectionManager.registerCommand(clazz)
+                        extensionCommands[extensionInfo.name] = extensionCommands.getOrDefault(extensionInfo.name, mutableListOf()).plus(clazz)
                     }
                     try {
                         val listener = clazz.asSubclass(Listener::class.java)
-                        reflectionManager.registerListener(listener)
+                        extensionListeners[extensionInfo.name] = extensionListeners.getOrDefault(extensionInfo.name, mutableListOf()).plus(listener)
                     } catch (e: ClassCastException) {
                         // Ignore
                     }
                     loadedClasses["${clazz.packageName}.${clazz.name}"] = clazz
-                    println("Loaded class ${clazz.packageName}.${clazz.name}")
                 }
 
                 availableExtensions[extensionInfo.name] = extensionInfo
@@ -232,6 +222,18 @@ class ExtensionsManager internal constructor(private val mainPlugin: NxTPlugin, 
                 extension.mainPlugin = mainPlugin
                 extension.pluginInfo = extensionInfo
 
+                extensionCommands[extensionInfo.name]?.distinct()?.mapNotNull(reflectionManager::registerCommand).let {
+                    if(it != null) {
+                        reflectionManager.registerCommands(*it.toTypedArray())
+                        extensionPluginCommands[extensionInfo.name] = it
+                    }
+                }
+                extensionListeners[extensionInfo.name]?.distinct()?.mapNotNull(reflectionManager::registerListener).let {
+                    if(it != null) {
+                        extensionPluginListeners[extensionInfo.name] = it
+                    }
+                }
+
                 loadedExtensions[name] = extension
                 extension.onLoad()
             } catch (e: Exception) {
@@ -244,6 +246,23 @@ class ExtensionsManager internal constructor(private val mainPlugin: NxTPlugin, 
     }
 
 
+    /**
+     * Enables all extensions.
+     * @author NxTCrew
+     * @since 0.1.1
+     * @see NxTExtension
+     */
+    private fun enableExtensions() {
+        loadedExtensions.forEach { (name, extension) ->
+            try {
+                extension.onEnable()
+            } catch (e: Exception) {
+                getItsLogger().warning("Could not enable extension $name.")
+                getItsLogger().warning(e.stackTraceToString())
+            }
+        }
 
+        getItsLogger().info("Enabled ${loadedExtensions.size} extensions.")
+    }
 
 }

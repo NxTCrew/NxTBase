@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.command.TabExecutor
 
 @NxTCommand(
+    namespace = "nxt",
     name = "extensions",
     description = "Manage extensions",
     usage = "/extensions",

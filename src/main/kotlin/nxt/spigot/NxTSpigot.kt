@@ -1,6 +1,5 @@
 package nxt.spigot
 
-import kotlinx.coroutines.DelicateCoroutinesApi
 import nxt.base.NxTBase
 import nxt.base.extensions.ExtensionsManager
 import nxt.base.reflection.ReflectionManager

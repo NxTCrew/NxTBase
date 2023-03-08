@@ -12,6 +12,7 @@ import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandMap
 import org.bukkit.command.PluginCommand
 import org.bukkit.command.TabCompleter
+import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 import org.bukkit.permissions.Permission
 import org.bukkit.plugin.Plugin
@@ -27,7 +28,7 @@ import kotlin.time.measureTime
  * @author NxTCrew
  * @since 0.0.6
  */
-internal class ReflectionManager internal constructor(private val mainPlugin: NxTPlugin) {
+class ReflectionManager internal constructor(private val mainPlugin: NxTPlugin) {
 
 
     /**
@@ -38,32 +39,11 @@ internal class ReflectionManager internal constructor(private val mainPlugin: Nx
      */
     internal suspend fun loadBaseReflections() {
         withContext(NxTBase.instance.ioDispatcher) {
-            val baseName = "nxt"
+            val baseName = "nxt.spigot"
             val reflections = Reflections(baseName)
             val timeForListeners = registerListeners(reflections, baseName)
             val timeForCommands = registerCommands(reflections, baseName)
             getItsLogger().info("Loaded internal commands and listeners in ${(timeForListeners + timeForCommands)}")
-        }
-    }
-
-    /**
-     * Loads all reflections (commands and listeners) for all loaded extensions
-     * @param extensions A list of loaded extensions
-     * @author NxTCrew
-     * @since 0.0.6
-     * @see NxTExtension
-     * @see Reflections
-     */
-    internal suspend fun loadExtensionReflections(extensions: List<NxTExtension>) {
-        withContext(NxTBase.instance.ioDispatcher) {
-            extensions.forEach { nxTExtension ->
-                val basePackage = nxTExtension::javaClass.get().packageName
-
-                val reflections = Reflections(basePackage)
-                val timeForListeners = registerListeners(reflections, basePackage)
-                val timeForCommands = registerCommands(reflections, basePackage)
-                getItsLogger().info("Loaded commands and listeners for ${nxTExtension.pluginInfo.name} in ${(timeForListeners + timeForCommands)}")
-            }
         }
     }
 
@@ -98,8 +78,7 @@ internal class ReflectionManager internal constructor(private val mainPlugin: Nx
         return timeForCommands
     }
 
-    internal fun registerCommand(clazz: Class<*>): PluginCommand? {
-        println("Found NxTCommand in ${clazz.packageName}.${clazz.name}")
+   fun registerCommand(clazz: Class<*>): PluginCommand? {
         val annotation = clazz.getAnnotation(NxTCommand::class.java)
         val pluginClass: Class<PluginCommand> = PluginCommand::class.java
         val constructor = pluginClass.getDeclaredConstructor(String::class.java, Plugin::class.java)
@@ -140,12 +119,11 @@ internal class ReflectionManager internal constructor(private val mainPlugin: Nx
         return timeForListeners
     }
 
-    internal fun registerListener(clazz: Class<out Listener>) {
-        println("Found Listener in ${clazz.packageName}.${clazz.name}")
+    fun registerListener(clazz: Class<out Listener>): Listener? {
         try {
-            val constructor = clazz.declaredConstructors.find { it.parameterCount == 0 } ?: return
+            val constructor = clazz.declaredConstructors.find { it.parameterCount == 0 } ?: return null
 
-            if (clazz.`package`.name.contains("conversations")) return
+            if (clazz.`package`.name.contains("conversations")) return null
 
             constructor.isAccessible = true
 
@@ -156,11 +134,13 @@ internal class ReflectionManager internal constructor(private val mainPlugin: Nx
             }
 
             getItsLogger().info("Listener ${event.javaClass.simpleName} registered")
+            return event
         } catch (exception: InstantiationError) {
             exception.printStackTrace()
         } catch (exception: IllegalAccessException) {
             exception.printStackTrace()
         }
+        return null
     }
 
 
@@ -171,7 +151,17 @@ internal class ReflectionManager internal constructor(private val mainPlugin: Nx
      * @see <a href="https://www.spigotmc.org/threads/cannot-register-command-with-commandmap.577072/#post-4496186">SpigotForums</a>
      * @since 0.0.6
      */
-    private fun registerCommands(vararg commands: PluginCommand) {
+    fun registerCommands(vararg commands: PluginCommand) {
+        val commandMap: CommandMap? = unsafeCommandMap()
+
+        // Register all the commands into the map
+        for (command in commands) {
+            commandMap?.register(command.label, command)
+            getItsLogger().info("Command `${command.name}` registered")
+        }
+    }
+
+    private fun unsafeCommandMap(): CommandMap? {
         val commandMapField: Field?
         var commandMap: CommandMap? = null
 
@@ -183,13 +173,19 @@ internal class ReflectionManager internal constructor(private val mainPlugin: Nx
         } catch (exception: Exception) {
             exception.printStackTrace()
         }
-
-        // Register all the commands into the map
-        for (command in commands) {
-            commandMap?.register(command.label, command)
-            getItsLogger().info("Command `${command.label}:${command.name}` registered")
-        }
+        return commandMap
     }
 
 
+    fun unregisterListeners(vararg listeners: Listener) {
+        for (listener in listeners) {
+            HandlerList.unregisterAll(listener)
+        }
+    }
+
+    fun unregisterCommands(vararg commands: PluginCommand) {
+        for (command in commands) {
+            unsafeCommandMap()?.let { command.unregister(it) }
+        }
+    }
 }

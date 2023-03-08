@@ -7,4 +7,5 @@ abstract class NxTPluginManager {
     abstract fun isPluginEnabled(pluginName: String): Boolean
 
     abstract fun loadPlugin(pluginFile: File)
+
 }

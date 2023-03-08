@@ -11,7 +11,7 @@ class NxTBase {
     }
 
     lateinit var extensionsManager: ExtensionsManager
-    internal lateinit var reflectionManager: ReflectionManager
+    lateinit var reflectionManager: ReflectionManager
 
     private val dispatcher = Dispatchers.Default
     internal val ioDispatcher = Dispatchers.IO
