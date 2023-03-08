@@ -44,14 +44,15 @@
 [![Security][sonar-security]][sonar-project-url]
 
 <!-- ABOUT THE PROJECT -->
+
 ## About The Project
 
-NxT is a entire ecosystem of extensions for Minecraft networks. This is the base plugin of the ecosystem, which can load extensions and provide a base for them.
-You, as a User, can simple choose from a variety of extensions and install them to your server. You can also create your own extensions and share them with the community.
+NxT is a entire ecosystem of extensions for Minecraft networks. This is the base plugin of the ecosystem, which can load
+extensions and provide a base for them.
+You, as a User, can simple choose from a variety of extensions and install them to your server. You can also create your
+own extensions and share them with the community.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
 
 ### Built With
 
@@ -65,6 +66,7 @@ You, as a User, can simple choose from a variety of extensions and install them 
 
 
 <!-- GETTING STARTED -->
+
 ## Getting Started
 
 To get a local copy up and running follow these simple steps.
@@ -72,6 +74,7 @@ To get a local copy up and running follow these simple steps.
 ### Prerequisites
 
 You need the following software to run this plugin:
+
 * Minecraft Spigot-based server software 1.19+ (Paper recommended)
 * Java 17
 
@@ -87,28 +90,29 @@ You need the following software to run this plugin:
 
 
 <!-- ROADMAP -->
+
 ## Roadmap
 
 - [ ] Extension system
-  - [x] Dynamic loading of extensions
-  - [ ] Extension Ingame Command
-     - [x] Simple extension management with list and reload
-     - [ ] Fully featured extension management
-  - [ ] Extension API
-  - [ ] Extension examples
-  - [ ] Extension documentation
-  - [ ] Extension cloud
+    - [x] Dynamic loading of extensions
+    - [ ] Extension Ingame Command
+        - [x] Simple extension management with list and reload
+        - [ ] Fully featured extension management
+    - [ ] Extension API
+    - [ ] Extension examples
+    - [ ] Extension documentation
+    - [ ] Extension cloud
 - [ ] Language system
-  - [ ] Dynamic loading of languages
-  - [ ] Language API
+    - [ ] Dynamic loading of languages
+    - [ ] Language API
 - [x] Dynamic loading of commands and listeners
 - [ ] Event system
-  - [ ] Dynamic loading of events
-  - [ ] Event API
+    - [ ] Dynamic loading of events
+    - [ ] Event API
 - [ ] Multiplatform support
-  - [ ] BungeeCord support
-  - [ ] Velocity support
-  - [x] Spigot support
+    - [ ] BungeeCord support
+    - [ ] Velocity support
+    - [x] Spigot support
 - [ ] GUI system
     - [ ] GUI API
     - [ ] GUI examples
@@ -117,18 +121,22 @@ You need the following software to run this plugin:
 - [ ] API
 - [ ] Documentation
 
-See the [open issues](https://github.com/NxTCrew/NxTBase/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc) for a full list of proposed features (and known issues).
+See the [open issues](https://github.com/NxTCrew/NxTBase/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc) for a full
+list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
 <!-- CONTRIBUTING -->
+
 ## Contributing
 
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any
+contributions you make are **greatly appreciated**.
 
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
+If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also
+simply open an issue with the tag "enhancement".
 Don't forget to give the project a star! Thanks again!
 
 1. Fork the Project
@@ -152,6 +160,7 @@ Don't forget to give the project a star! Thanks again!
 
 
 <!-- LICENSE -->
+
 ## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
@@ -161,6 +170,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 
 <!-- CONTACT -->
+
 ## Contact
 
 Project Link: [https://github.com/NxTCrew/NxTBase](https://github.com/NxTCrew/NxTBase)
@@ -170,6 +180,7 @@ Project Link: [https://github.com/NxTCrew/NxTBase](https://github.com/NxTCrew/Nx
 
 
 <!-- ACKNOWLEDGMENTS -->
+
 ## Acknowledgments
 
 * [GitHub Emoji Cheat Sheet](https://www.webpagefx.com/tools/emoji-cheat-sheet)
@@ -182,27 +193,47 @@ Project Link: [https://github.com/NxTCrew/NxTBase](https://github.com/NxTCrew/Nx
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+
 [contributors-shield]: https://img.shields.io/github/contributors/NxTCrew/NxTBase.svg?style=for-the-badge
+
 [contributors-url]: https://github.com/orgs/NxTCrew/NxTBase/graphs/contributors
+
 [forks-shield]: https://img.shields.io/github/forks/NxTCrew/NxTBase.svg?style=for-the-badge
+
 [forks-url]: https://github.com/NxTCrew/NxTBase/network/members
+
 [stars-shield]: https://img.shields.io/github/stars/NxTCrew/NxTBase.svg?style=for-the-badge
+
 [stars-url]: https://github.com/NxTCrew/NxTBase/stargazers
+
 [issues-shield]: https://img.shields.io/github/issues/NxTCrew/NxTBase.svg?style=for-the-badge
+
 [issues-url]: https://github.com/NxTCrew/NxTBase/issues
+
 [license-shield]: https://img.shields.io/github/license/NxTCrew/NxTBase.svg?style=for-the-badge
+
 [license-url]: https://github.com/orgs/NxTCrew/NxTBase/main/LICENSE
 
 [sonar-project-url]: https://qube.flawcra.cc/dashboard?id=NxTCrew_NxTBase_AYa9AgdbUqCxtis1paPn
+
 [sonar-maintainability]: https://qube.flawcra.cc/api/project_badges/measure?project=NxTCrew_NxTBase_AYa9AgdbUqCxtis1paPn&metric=sqale_rating
+
 [sonar-reliability]: https://qube.flawcra.cc/api/project_badges/measure?project=NxTCrew_NxTBase_AYa9AgdbUqCxtis1paPn&metric=reliability_rating
+
 [sonar-security]: https://qube.flawcra.cc/api/project_badges/measure?project=NxTCrew_NxTBase_AYa9AgdbUqCxtis1paPn&metric=security_rating
 
 [Spigot]: https://img.shields.io/badge/Spigot-1.19+-green.svg?style=for-the-badge
+
 [Spigot-url]: https://www.spigotmc.org/
+
 [Kotlin]: https://img.shields.io/badge/Kotlin-1.8.20%20beta-blue.svg?style=for-the-badge
+
 [Kotlin-url]: https://kotlinlang.org/
+
 [Gradle]: https://img.shields.io/badge/Gradle-8.0.1-blue.svg?style=for-the-badge
+
 [Gradle-url]: https://gradle.org/
+
 [Ascend]: https://img.shields.io/badge/Ascend-22.0.0-green.svg?style=for-the-badge
+
 [Ascend-url]: https://github.com/TheFruxz/Ascend

@@ -1,6 +1,6 @@
 name: LobbyBuild
 
-on: [push]
+on: [ push ]
 
 jobs:
   build:

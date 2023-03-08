@@ -11,7 +11,7 @@ import org.bukkit.permissions.PermissionDefault
  * @see org.bukkit.command.CommandExecutor
  */
 @Retention(AnnotationRetention.RUNTIME)
-annotation class NxTCommand (
+annotation class NxTCommand(
     /**
      * The name of the command. This is the name that will be used to execute the command.
      * Example: /name <args>

@@ -4,7 +4,6 @@ import de.fruxz.ascend.extension.logging.getItsLogger
 import kotlinx.coroutines.*
 import nxt.base.NxTBase
 import nxt.base.abstraction.NxTPlugin
-import nxt.base.extensions.types.NxTExtension
 import nxt.base.reflection.types.NxTCommand
 import nxt.spigot.abstraction.SpigotNxTPlugin
 import org.bukkit.Bukkit
@@ -78,7 +77,7 @@ class ReflectionManager internal constructor(private val mainPlugin: NxTPlugin) 
         return timeForCommands
     }
 
-   fun registerCommand(clazz: Class<*>): PluginCommand? {
+    fun registerCommand(clazz: Class<*>): PluginCommand? {
         val annotation = clazz.getAnnotation(NxTCommand::class.java)
         val pluginClass: Class<PluginCommand> = PluginCommand::class.java
         val constructor = pluginClass.getDeclaredConstructor(String::class.java, Plugin::class.java)

@@ -18,25 +18,32 @@ import org.bukkit.command.TabExecutor
 class ExtensionsCommand : CommandExecutor, TabExecutor {
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
 
-        when(args.getOrNull(0)) {
+        when (args.getOrNull(0)) {
             "reload" -> {
                 NxTBase.instance.extensionsManager.reloadExtensions()
                 sender.sendMessage("§aExtensions reloaded!")
             }
+
             "list" -> {
                 sender.sendMessage("§aExtensions:")
                 NxTBase.instance.extensionsManager.loadedExtensions.forEach { (name, extension) ->
                     sender.sendMessage("§7- §a$name §7(§a${extension.pluginInfo.version}§7)")
                 }
             }
+
             else -> return false
         }
 
         return true
     }
 
-    override fun onTabComplete(sender: CommandSender, command: Command, alias: String, args: Array<out String>): MutableList<String> {
-        return when(args.size) {
+    override fun onTabComplete(
+        sender: CommandSender,
+        command: Command,
+        alias: String,
+        args: Array<out String>
+    ): MutableList<String> {
+        return when (args.size) {
             1 -> mutableListOf("reload", "list")
             else -> mutableListOf()
         }

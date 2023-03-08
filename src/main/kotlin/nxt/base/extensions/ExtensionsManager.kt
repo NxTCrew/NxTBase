@@ -20,10 +20,13 @@ import java.net.HttpURLConnection
 import java.net.URLClassLoader
 import java.nio.charset.Charset
 
-class ExtensionsManager internal constructor(private val mainPlugin: NxTPlugin, private val reflectionManager: ReflectionManager) {
+class ExtensionsManager internal constructor(
+    private val mainPlugin: NxTPlugin,
+    private val reflectionManager: ReflectionManager
+) {
 
     private val extensionsFolder = File(mainPlugin.dataFolder, "extensions").let { if (!it.exists()) it.mkdirs(); it }
-    private  val gson = Gson()
+    private val gson = Gson()
 
     private val availableExtensions = mutableMapOf<String, ExtensionInfo>()
     val loadedExtensions = mutableMapOf<String, NxTExtension>()
@@ -35,7 +38,8 @@ class ExtensionsManager internal constructor(private val mainPlugin: NxTPlugin, 
     private val extensionPluginListeners = mutableMapOf<String, List<Listener>>()
 
     private val classLoaderParent = javaClass.classLoader
-    private val classLoader = URLClassLoader(extensionsFolder.listFiles()?.map { it.toURI().toURL() }?.toTypedArray(), classLoaderParent)
+    private val classLoader =
+        URLClassLoader(extensionsFolder.listFiles()?.map { it.toURI().toURL() }?.toTypedArray(), classLoaderParent)
 
     private val loadedClasses = mutableMapOf<String, Class<*>>()
 
@@ -91,11 +95,13 @@ class ExtensionsManager internal constructor(private val mainPlugin: NxTPlugin, 
                     val className = entry.name.replace('/', '.').dropLast(6)
                     val clazz = classLoader.loadClass(className)
                     if (clazz.annotations.any { it is NxTCommand }) {
-                        extensionCommands[extensionInfo.name] = extensionCommands.getOrDefault(extensionInfo.name, mutableListOf()).plus(clazz)
+                        extensionCommands[extensionInfo.name] =
+                            extensionCommands.getOrDefault(extensionInfo.name, mutableListOf()).plus(clazz)
                     }
                     try {
                         val listener = clazz.asSubclass(Listener::class.java)
-                        extensionListeners[extensionInfo.name] = extensionListeners.getOrDefault(extensionInfo.name, mutableListOf()).plus(listener)
+                        extensionListeners[extensionInfo.name] =
+                            extensionListeners.getOrDefault(extensionInfo.name, mutableListOf()).plus(listener)
                     } catch (e: ClassCastException) {
                         // Ignore
                     }
@@ -117,9 +123,9 @@ class ExtensionsManager internal constructor(private val mainPlugin: NxTPlugin, 
      */
     private suspend fun checkDependencies() {
         availableExtensions.forEach { (name, extensionInfo) ->
-            if(extensionInfo.dependencies.isEmpty() && extensionInfo.pluginDependencies.isEmpty()) return@forEach
+            if (extensionInfo.dependencies.isEmpty() && extensionInfo.pluginDependencies.isEmpty()) return@forEach
 
-            if(extensionInfo.dependencies.isNotEmpty()) {
+            if (extensionInfo.dependencies.isNotEmpty()) {
                 extensionInfo.dependencies.forEach { dependency ->
                     if (!availableExtensions.containsKey(dependency)) {
                         getItsLogger().warning("Extension $name has a dependency on $dependency, but it is not loaded.")
@@ -127,7 +133,7 @@ class ExtensionsManager internal constructor(private val mainPlugin: NxTPlugin, 
                 }
             }
 
-            if(extensionInfo.pluginDependencies.isEmpty()) return@forEach
+            if (extensionInfo.pluginDependencies.isEmpty()) return@forEach
             extensionInfo.pluginDependencies.forEach { dependency ->
                 if (!mainPlugin.server.pluginManager.isPluginEnabled(dependency)) {
                     getItsLogger().warning("Extension $name has a dependency on $dependency, but it is not loaded.")
@@ -157,7 +163,7 @@ class ExtensionsManager internal constructor(private val mainPlugin: NxTPlugin, 
      * @author NxTCrew
      * @since 0.0.4
      */
-    private suspend fun downloadPlugin(pluginName: String, onSuccess : suspend (plugin: File) -> Unit = {}) {
+    private suspend fun downloadPlugin(pluginName: String, onSuccess: suspend (plugin: File) -> Unit = {}) {
         withContext(NxTBase.instance.ioDispatcher) {
             val infoUrl = java.net.URL("https://api.spiget.org/v2/search/resources/$pluginName?sort=-downloads")
             val pluginInfo = infoUrl.readText(Charset.defaultCharset())
@@ -206,7 +212,7 @@ class ExtensionsManager internal constructor(private val mainPlugin: NxTPlugin, 
                 0
             }
 
-            if(ex1Info.loadBefore.contains(ex2)) {
+            if (ex1Info.loadBefore.contains(ex2)) {
                 -1
             } else if (ex2Info.loadBefore.contains(ex1)) {
                 1
@@ -223,16 +229,17 @@ class ExtensionsManager internal constructor(private val mainPlugin: NxTPlugin, 
                 extension.pluginInfo = extensionInfo
 
                 extensionCommands[extensionInfo.name]?.distinct()?.mapNotNull(reflectionManager::registerCommand).let {
-                    if(it != null) {
+                    if (it != null) {
                         reflectionManager.registerCommands(*it.toTypedArray())
                         extensionPluginCommands[extensionInfo.name] = it
                     }
                 }
-                extensionListeners[extensionInfo.name]?.distinct()?.mapNotNull(reflectionManager::registerListener).let {
-                    if(it != null) {
-                        extensionPluginListeners[extensionInfo.name] = it
+                extensionListeners[extensionInfo.name]?.distinct()?.mapNotNull(reflectionManager::registerListener)
+                    .let {
+                        if (it != null) {
+                            extensionPluginListeners[extensionInfo.name] = it
+                        }
                     }
-                }
 
                 loadedExtensions[name] = extension
                 extension.onLoad()
