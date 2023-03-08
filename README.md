@@ -14,8 +14,7 @@
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
-[![Maintainability][sonar-maintainability]][sonar-project-url]
-[![Reliability][sonar-reliability]][sonar-project-url]
+
 
 
 
@@ -40,7 +39,9 @@
   </p>
 </div>
 
-
+[![Maintainability][sonar-maintainability]][sonar-project-url]
+[![Reliability][sonar-reliability]][sonar-project-url]
+[![Security][sonar-security]][sonar-project-url]
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
@@ -195,6 +196,7 @@ Project Link: [https://github.com/NxTCrew/NxTBase](https://github.com/NxTCrew/Nx
 [sonar-project-url]: https://qube.flawcra.cc/dashboard?id=NxTCrew_NxTBase_AYa9AgdbUqCxtis1paPn
 [sonar-maintainability]: https://qube.flawcra.cc/api/project_badges/measure?project=NxTCrew_NxTBase_AYa9AgdbUqCxtis1paPn&metric=sqale_rating
 [sonar-reliability]: https://qube.flawcra.cc/api/project_badges/measure?project=NxTCrew_NxTBase_AYa9AgdbUqCxtis1paPn&metric=reliability_rating
+[sonar-security]: https://qube.flawcra.cc/api/project_badges/measure?project=NxTCrew_NxTBase_AYa9AgdbUqCxtis1paPn&metric=security_rating
 
 [Spigot]: https://img.shields.io/badge/Spigot-1.19+-green.svg?style=for-the-badge
 [Spigot-url]: https://www.spigotmc.org/
