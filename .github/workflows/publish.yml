@@ -43,3 +43,10 @@ jobs:
         env:
           FLAWCRA_REPO_USER: ${{ secrets.FLAWCRA_REPO_USER }}
           FLAWCRA_REPO_KEY: ${{ secrets.FLAWCRA_REPO_KEY }}
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: "Plugin Files"
+          path: |
+            build/libs/*.jar
