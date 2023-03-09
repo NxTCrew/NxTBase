@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "nxt"
-version = "0.1.2"
+version = "0.1.3"
 
 repositories {
     maven("https://repo.flawcra.cc/mirrors")
@@ -22,7 +22,9 @@ val shadows = listOf(
     "org.javassist:javassist:3.29.2-GA",             // Library for Reflections (Dynamic Class Loading)
     "io.ktor:ktor-client-core-jvm:2.2.3",               // Library for HTTP Requests
     "io.ktor:ktor-client-cio-jvm:2.2.3",                // Library for HTTP Requests
-    "com.github.TheFruxz:Ascend:2023.1"
+    "com.github.TheFruxz:Ascend:2023.1",
+    "com.github.TheFruxz:Stacked:4.0.0",
+    "net.kyori:adventure-platform-bukkit:4.2.0"
 )
 
 dependencies {
